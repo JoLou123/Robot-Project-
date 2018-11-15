@@ -1,41 +1,35 @@
-#include "TBMotor.h"
+// Adafruit Motor shield library
+// copyright Adafruit Industries LLC, 2009
+// this code is public domain, enjoy!
 
-OseppTBMotor Motor1(12, 11);
-OseppTBMotor Motor2(8, 3);
-//OseppTBMotor Motor3(7, 6);
-//OseppTBMotor Motor4(4, 5);
+#include <AFMotor.h>
+AF_DCMotor motor1(1, MOTOR12_64KHZ); // create motor #1, 64KHz pwm
+AF_DCMotor motor2(2, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
+AF_DCMotor motor3(3, MOTOR34_1KHZ); // create motor #3, 1KHz pwm
+AF_DCMotor motor4(4, MOTOR34_1KHZ); // create motor #4, 1KHz pwm
 
-#define leftMotor Motor1
-#define rightMotor Motor2
+void setup() {
+   Serial.begin (9600);
 
-void setup()
-{
-  
+  // turn on motor
+  motor1.setSpeed(255);
+  motor2.setSpeed(255);
+  motor3.setSpeed(255);
+  motor4.setSpeed(255);
 }
 
-void loop()
-{
-  leftMotor.SetSpeed(255);
-  rightMotor.SetSpeed(255);
+void loop() {
+     
+      motor1.run(FORWARD);
+      motor1.setSpeed(255);  
 
+      motor2.run(FORWARD);
+      motor2.setSpeed(255);
+
+   
+      motor3.run(FORWARD);
+      motor3.setSpeed(255);
+
+      motor4.run(FORWARD);
+      motor4.setSpeed(255);
 }
-
-//Multiple sampling, take the average, is a good way to resist interference
-/*float dist_filter()
-{
-  float avgDist = 0;
-  int i = 0;
-  for (i = 0; i < 10; i++)avgDist += ults.Detect();
-  return avgDist / i;
-}
-
-void SetMotor()
-{
-  if (leftSpeed > 255)leftSpeed = 255; else if (leftSpeed < -255)leftSpeed = -255;
-  if (rightSpeed > 255)rightSpeed = 255; else if (rightSpeed < -255)rightSpeed = -255;
-  //Depending on your connection,
-  //if the direction of the motor rotation is not the direction you want,
-  //you can change it by changing the Positive/negative sign of the speed
-  leftMotor.SetSpeed(leftSpeed);
-  rightMotor.SetSpeed(-rightSpeed);
-}*/
