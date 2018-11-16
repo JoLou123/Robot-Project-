@@ -1,0 +1,128 @@
+// Adafruit Motor shield library
+// copyright Adafruit Industries LLC, 2009
+// this code is public domain, enjoy!
+
+#include <AFMotor.h>  
+AF_DCMotor motor1(1, MOTOR12_64KHZ); // create motor #1, 64KHz pwm
+AF_DCMotor motor2(2, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
+AF_DCMotor motor3(3, MOTOR34_1KHZ); // create motor #3, 1KHz pwm
+AF_DCMotor motor4(4, MOTOR34_1KHZ); // create motor #4, 1KHz pwm
+
+int startFlag = 0;
+
+int leftLimit = 25;
+int rightLimit = 24;
+int left = 0; //left limit switch read value
+int right = 0; //right limit switch read value
+int bottomReached = 0 ;
+
+int tiltPin = 26;         // the number of the input pin
+int reading;           // the current reading from the input pin
+int previous = LOW;    // the previous reading from the input pin
+int switchstate;
+long time = 0;         // the last time the output pin was toggled
+long debounceTime = 50;   // the debounce time, increase if the output flickers
+
+
+void setup() {
+   Serial.begin (9600);
+   
+  pinMode(51, OUTPUT);
+  digitalWrite(51, HIGH);
+   pinMode(tiltPin, INPUT);
+}
+
+void debounce() {
+ 
+  reading = digitalRead(tiltPin);
+ 
+  // If the switch changed, due to bounce or pressing...
+  if (reading != previous) {
+    // reset the debouncing timer
+    time = millis();
+  } 
+ 
+  if ((millis() - time) > debounceTime) {
+     // whatever the switch is at, its been there for a long time
+     // so lets settle on it!
+     switchstate = reading;
+  }
+}
+void traverseWall() {  
+  Serial.println(switchstate);
+  while(switchstate == 1) {
+    motor1.run(FORWARD);
+    motor1.setSpeed(255);  
+
+    motor2.run(FORWARD);
+    motor2.setSpeed(255);
+
+ 
+    motor3.run(FORWARD);
+    motor3.setSpeed(255);
+
+    motor4.run(FORWARD);
+    motor4.setSpeed(255);
+    debounce();
+  }
+  
+    motor1.run(FORWARD);
+    motor1.setSpeed(150);  
+
+    motor2.run(FORWARD);
+    motor2.setSpeed(150);
+ 
+    motor3.run(FORWARD);
+    motor3.setSpeed(150);
+
+    motor4.run(FORWARD);
+    motor4.setSpeed(150);
+
+   while(bottomReached == 0) {
+       //Read limit switch values
+      left = digitalRead(leftLimit);
+      right = digitalRead(rightLimit);
+  
+      if(left == 1 || right == 1) {
+        bottomReached = 1;
+      }
+   }
+    motor1.run(FORWARD);
+    motor1.setSpeed(255);  
+
+    motor2.run(FORWARD);
+    motor2.setSpeed(255);
+
+ 
+    motor3.run(FORWARD);
+    motor3.setSpeed(255);
+
+    motor4.run(FORWARD);
+    motor4.setSpeed(255);
+}
+
+void loop() {
+    traverseWall();
+//      //Read limit switch values
+//      left = digitalRead(leftLimit);
+//      right = digitalRead(rightLimit);
+//
+//      if(left == 1 || right == 1) {
+//        if(startFlag == 1){ 
+//          startFlag = 0;
+//        } else { 
+//          startFlag = 1;
+//        }
+//      }
+//
+//     if(startFlag == 0) {
+//        motor1.run(RELEASE);
+//        motor2.run(RELEASE);
+//        motor3.run(RELEASE);
+//        motor4.run(RELEASE);
+//     } else { 
+        
+   //  }
+
+   
+}

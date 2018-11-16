@@ -1,54 +1,118 @@
-/* Encoder Library - Basic Example
- * http://www.pjrc.com/teensy/td_libs_Encoder.html
- *
- * This example code is in the public domain.
- */
+#include <AFMotor.h>  
+AF_DCMotor motor1(1, MOTOR12_64KHZ); // backleft
+AF_DCMotor motor2(2, MOTOR12_64KHZ); // frontleft
+AF_DCMotor motor3(3, MOTOR34_1KHZ); // frontright
+AF_DCMotor motor4(4, MOTOR34_1KHZ); // backright
 
-#include <Encoder.h>
-#include <AFMotor.h>
+int tiltPin = 26;         // the number of the input pin
+ 
+int reading;           // the current reading from the input pin
+int previous = LOW;    // the previous reading from the input pin
+ 
+// the following variables are long because the time, measured in miliseconds,
+// will quickly become a bigger number than can be stored in an int.
+long time = 0;         // the last time the output pin was toggled
+long debounceTime = 500;   // the debounce time, increase if the output flickers
 
-// Change these two numbers to the pins connected to your encoder.
-//   Best Performance: both pins have interrupt capability
-//   Good Performance: only the first pin has interrupt capability
-//   Low Performance:  neither pin has interrupt capability
+int leftLimit = 25;
+int left = 0; //left limit switch read value
+int bottomReached = 0;
 
-
-int motor3A = 18;
-int motor3B = 19; 
-
-
-
-Encoder myEnc(motor3A, motor3B);  
-//   avoid using pins with LEDs attached
-AF_DCMotor motor3(3, MOTOR34_1KHZ); // create motor #3, 1KHz pwm
-
-void setup() {
-  Serial.begin(9600);
+void setup()
+{
+  pinMode(tiltPin, INPUT);
+  digitalWrite(tiltPin, HIGH);
+  pinMode(leftLimit, INPUT);
   pinMode(51, OUTPUT);
   digitalWrite(51, HIGH);
+  Serial.begin(9600);
+}
 
-  digitalWrite(motor3A, HIGH);
-  digitalWrite(motor3B, HIGH);
-  attachInterrupt(digitalPinToInterrupt(motor3A), increment, CHANGE);
- // attachInterrupt(digitalPinToInterrupt(motor3B), increment, CHANGE);
-
+void traverseWall() {
+    int switchstate;
+ 
+  reading = digitalRead(tiltPin);
+ 
+  // If the switch changed, due to bounce or pressing...
+  if (reading != previous) {
+    // reset the debouncing timer
+    time = millis();
+  } 
+ 
+  if ((millis() - time) > debounceTime) {
+     // whatever the switch is at, its been there for a long time
+     // so lets settle on it!
+     switchstate = reading;
+ 
+  }
   
-  Serial.println("Basic Encoder Test:");
-}
+  left = digitalRead(leftLimit);
+  if(left == 1) {
+    bottomReached = 1;
+  }
+    
+  Serial.println(switchstate);
+  if(switchstate == 0 && bottomReached == 0) {
+    motor1.run(FORWARD);
+    motor1.setSpeed(255);  
 
-//long oldPosition  = -999;
-void increment() {
-//    long newPosition = myEnc.read();
-//  if (newPosition != oldPosition) {
-//    oldPosition = newPosition;
-//    Serial.println(newPosition);
-//  } 
+    motor2.run(FORWARD);
+    motor2.setSpeed(255);
+
+ 
+    motor3.run(FORWARD);
+    motor3.setSpeed(255);
+
+    motor4.run(FORWARD);
+    motor4.setSpeed(255);
+  } else if(switchstate == 1 && bottomReached == 0) {
+    motor1.run(FORWARD);
+    motor1.setSpeed(255);  
+
+    motor2.run(FORWARD);
+    motor2.setSpeed(255);
+ 
+    motor3.run(FORWARD);
+    motor3.setSpeed(255);
+
+    motor4.run(FORWARD);
+    motor4.setSpeed(255);
+  } else { 
+      motor1.run(FORWARD);
+      motor1.setSpeed(255);  
+  
+      motor2.run(FORWARD);
+      motor2.setSpeed(255);
+  
    
+      motor3.run(FORWARD);
+      motor3.setSpeed(255);
+  
+      motor4.run(FORWARD);
+      motor4.setSpeed(255);
+  }
+  
+  // Save the last reading so we keep a running tally
+  previous = reading;
+  delay(100);
 }
-
-void loop() {
-
-  motor3.run(FORWARD);
-  motor3.setSpeed(180);  
-      
+ 
+void loop()
+{
+  //left = digitalRead(leftLimit);
+  //Serial.println(left);
+  traverseWall();
+//      motor1.run(FORWARD);
+//      motor1.setSpeed(255);  
+//  
+//      motor2.run(FORWARD);
+//      motor2.setSpeed(255);
+//  
+//   
+//      motor3.run(FORWARD);
+//      motor3.setSpeed(255);
+//  
+//      motor4.run(FORWARD);
+//      motor4.setSpeed(255);
+//  
 }
