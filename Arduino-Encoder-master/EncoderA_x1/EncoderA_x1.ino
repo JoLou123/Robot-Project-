@@ -36,16 +36,16 @@ void turnRobot(int turnFraction)
 	// Right turn
 	if(turnFraction > 0)
 	{
-		// Right motors
-		motor1.run(BACKWARDS);
+		// Left motors
+		motor1.run(FORWARD);
 		motor1.setSpeed(255);
-		motor4.run(BACKWARD);
+		motor4.run(FORWARD);
 		motor4.setSpeed(255);
 
-		// Left motors
-		motor2.run(FORWARD);
+		// Right motors
+		motor2.run(BACKWARD);
 		motor2.setSpeed(255);
-		motor3.run(FORWARD);
+		motor3.run(BACKWARD);
 		motor3.setSpeed(255);
 
 		while(encoderCount < numPulses) {
@@ -57,16 +57,16 @@ void turnRobot(int turnFraction)
 	// Left turn
 	else
 	{
-		// Right motors
-		motor1.run(FORWARD);
+		// Left motors
+		motor1.run(BACKWARD);
 		motor1.setSpeed(255);
-		motor4.run(FORWARD);
+		motor4.run(BACKWARD);
 		motor4.setSpeed(255);
 
-		// Left motors
-		motor2.run(BACKWARD);
+		// Right motors
+		motor2.run(FORWARD);
 		motor2.setSpeed(255);
-		motor3.run(BACKWARD);
+		motor3.run(FORWARD);
 		motor3.setSpeed(255);
 
 		while(encoderCount > numPulses) {
