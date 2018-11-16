@@ -36,15 +36,17 @@ void turnRobot(int turnFraction)
 	// Right turn
 	if(turnFraction > 0)
 	{
-		motor1.run(FORWARD);
+		// Right motors
+		motor1.run(BACKWARDS);
 		motor1.setSpeed(255);
-		motor2.run(FORWARD);
-		motor2.setSpeed(255);
-
-		motor3.run(BACKWARD);
-		motor3.setSpeed(255);
 		motor4.run(BACKWARD);
 		motor4.setSpeed(255);
+
+		// Left motors
+		motor2.run(FORWARD);
+		motor2.setSpeed(255);
+		motor3.run(FORWARD);
+		motor3.setSpeed(255);
 
 		while(encoderCount < numPulses) {
 			Serial.print("Encoder count: ");
@@ -55,17 +57,19 @@ void turnRobot(int turnFraction)
 	// Left turn
 	else
 	{
-		motor1.run(BACKWARD);
+		// Right motors
+		motor1.run(FORWARD);
 		motor1.setSpeed(255);
-		motor2.run(BACKWARD);
-		motor2.setSpeed(255);
-
-		motor3.run(FORWARD);
-		motor3.setSpeed(255);
 		motor4.run(FORWARD);
 		motor4.setSpeed(255);
 
-		while(encoderCount < numPulses) {
+		// Left motors
+		motor2.run(BACKWARD);
+		motor2.setSpeed(255);
+		motor3.run(BACKWARD);
+		motor3.setSpeed(255);
+
+		while(encoderCount > numPulses) {
 			Serial.print("Encoder count: ");
 			Serial.println(encoderCount);
 		}
