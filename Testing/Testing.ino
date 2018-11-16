@@ -1,8 +1,8 @@
 #include <AFMotor.h>  
-AF_DCMotor motor1(1, MOTOR12_64KHZ); // backleft
-AF_DCMotor motor2(2, MOTOR12_64KHZ); // frontleft
-AF_DCMotor motor3(3, MOTOR34_1KHZ); // frontright
-AF_DCMotor motor4(4, MOTOR34_1KHZ); // backright
+AF_DCMotor motor1(1, MOTOR12_64KHZ); // back left
+AF_DCMotor motor2(2, MOTOR12_64KHZ); // back right
+AF_DCMotor motor3(3, MOTOR34_1KHZ); // front right
+AF_DCMotor motor4(4, MOTOR34_1KHZ); // front left
 
 int tiltPin = 26;         // the number of the input pin
  
