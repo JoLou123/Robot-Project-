@@ -30,14 +30,14 @@ void setup()
 }
 
 // Turn robot a fraction of a 360 degree turn
-void turnRobot(double turnFraction)
+void turnRobot(double turnFactor)
 {
-  int turnEncCount = -1 * (int)(turnFraction * ENC_COUNT_PER_ROTATION * RADIUS_RATIO);
+  int turnEncCount = -1 * (int)(turnFactor * ENC_COUNT_PER_ROTATION * RADIUS_RATIO);
   Serial.print("Encoder count to complete turn: ");
   Serial.println(turnEncCount);
 
   // Right turn, encoder count decreases
-  if (turnFraction > 0)
+  if (turnFactor > 0)
   {
     // Left motors
     motor1.run(FORWARD);
