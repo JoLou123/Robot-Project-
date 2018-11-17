@@ -8,6 +8,7 @@ void setup() {
 }
 
 void loop() {
-  delay(2000);
-  WallClimbingRobot::moveForward(1);
+  delay(3000);
+  WallClimbingRobot::findObject();
+  //WallClimbingRobot::moveForward(1);
 }
