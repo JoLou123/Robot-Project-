@@ -23,11 +23,43 @@ namespace WallClimbingRobot
 		Serial.println("WallClimbingRobot setup complete");
 	}
 
+	void moveForward(double distanceFactor)
+	{
+		int totalEncCount = ENC_DIR_FACTOR * (int)(distanceFactor * ENC_COUNT_PER_METRE);
+		Serial.print("Encoder count to complete forward movement: ");
+		Serial.println(totalEncCount);
+
+		// Left motors
+		motor1.run(FORWARD);
+		motor1.setSpeed((int)(255));
+		motor4.run(FORWARD);
+		motor4.setSpeed((int)(255));
+
+		// Right motors
+		motor2.run(FORWARD);
+		motor2.setSpeed(255);
+		motor3.run(FORWARD);
+		motor3.setSpeed(255);
+
+		while(encCount > totalEncCount)
+		{
+			Serial.print("Encoder count: ");
+			Serial.println(encCount);
+		}
+
+		motor1.run(RELEASE);
+		motor2.run(RELEASE);
+		motor3.run(RELEASE);
+		motor4.run(RELEASE);
+
+		encCount = 0;
+	}
+
 	void turn(double turnFactor)
 	{
-		int turnEncCount = -1 * (int)(turnFactor * ENC_COUNT_PER_ROBOT_ROTATION);
+		int totalEncCount = ENC_DIR_FACTOR * (int)(turnFactor * ENC_COUNT_PER_ROBOT_ROTATION);
 		Serial.print("Encoder count to complete turn: ");
-		Serial.println(turnEncCount);
+		Serial.println(totalEncCount);
 
 		// Right turn, encoder count decreases
 		if (turnFactor > 0)
@@ -44,7 +76,7 @@ namespace WallClimbingRobot
 			motor3.run(BACKWARD);
 			motor3.setSpeed(255);
 
-			while(encCount > turnEncCount)
+			while(encCount > totalEncCount)
 			{
 				Serial.print("Encoder count: ");
 				Serial.println(encCount);
@@ -66,7 +98,7 @@ namespace WallClimbingRobot
 			motor3.run(FORWARD);
 			motor3.setSpeed(255);
 
-			while(encCount < turnEncCount)
+			while(encCount < totalEncCount)
 			{
 				Serial.print("Encoder count: ");
 				Serial.println(encCount);
@@ -79,11 +111,6 @@ namespace WallClimbingRobot
 		motor4.run(RELEASE);
 
 		encCount = 0;
-	}
-
-	void move(double distanceFactor)
-	{
-		Serial.println("TODO: Implement move()");
 	}
 
 	void ENC_PHASE_A_CHANGE_ISR()

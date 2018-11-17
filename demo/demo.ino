@@ -8,6 +8,6 @@ void setup() {
 }
 
 void loop() {
-  WallClimbingRobot::turn(0.25);
-  delay(1000);
+  delay(2000);
+  WallClimbingRobot::moveForward(1);
 }
