@@ -18,28 +18,29 @@
 #define TRIG_PIN (22)
 #define ECHO_PIN (23)
 
-#define TILT_SWITCH_PIN (25)
+#define TILT_SWITCH_PIN (26)
 
 namespace WallClimbingRobot
 {
 	void setup();
-
 	void findObject();
 
-	void goForward(int speed);
+	// Move robot straight forward with a given factor of max speed
+	void driveGivenSpeed(double speedFactor);
 
 	void stop();
-
-	void checkLimit();
-
 	void traverseWall();
 
-	// Move robot straight a factor of 1 metre
-	void drive(double distanceFactor);
+	// Move robot straight forward a factor of 1 metre
+	void driveGivenDistance(double distanceFactor);
 
 	// Turn robot a factor of a 360 degree turn
 	// Positive for right turn, negative for left turn
-	void turn(double turnFactor);
+	void turnDistance(double turnFactor);
+
+
+	void waitForTiltSwitchChange();
+	void waitForLimitSwitchPress();
 
 	// ISR for change in encoder A phase
 	void ENC_PHASE_A_CHANGE_ISR();

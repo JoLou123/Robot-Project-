@@ -1,13 +1,16 @@
 #include "WallClimbingRobot.h"
 
-void setup() {  
+void setup() {
+  pinMode(53, OUTPUT);
+  digitalWrite(53, HIGH);
+  
   WallClimbingRobot::setup();
 }
 
 void loop() {
-  delay(3000);
-  
+  //WallClimbingRobot::waitForTiltSwitchChange();
+  //delay(4000);
+  WallClimbingRobot::waitForLimitSwitchPress();
   WallClimbingRobot::traverseWall();
-  //WallClimbingRobot::findObject();
-  //WallClimbingRobot::moveForward(1);
+  delay(4000);
 }
