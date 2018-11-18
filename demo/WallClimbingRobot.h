@@ -4,7 +4,7 @@
 #define ENC_DIR_FACTOR (-1) // 1 for positive forwards, -1 for positive backwards
 
 #define ENC_COUNT_PER_METRE (6635)
-#define ENC_COUNT_PER_ROBOT_ROTATION (5078)
+#define ENC_COUNT_PER_ROBOT_ROTATION (4062)
 
 #define ENC_A_PIN_NUM (18)
 #define ENC_B_PIN_NUM (19)
@@ -13,8 +13,8 @@
 
 #define SERVO_PIN (44)
 
-#define TRIG_PIN (22)
-#define ECHO_PIN (23)
+#define TRIG_PIN (42)
+#define ECHO_PIN (40)
 
 namespace WallClimbingRobot
 {
@@ -29,6 +29,8 @@ namespace WallClimbingRobot
 	void checkLimit();
 
 	void traverseWall();
+
+	void findWall();
 
 	// Move robot straight a factor of 1 metre
 	void drive(double distanceFactor);

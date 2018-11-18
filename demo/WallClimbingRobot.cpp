@@ -28,6 +28,7 @@ namespace WallClimbingRobot
 		pinMode(ECHO_PIN, INPUT);
 
 		servo.attach(SERVO_PIN);
+		//servo.write(0);
 	
 		attachInterrupt(digitalPinToInterrupt(ENC_A_PIN_NUM), ENC_PHASE_A_CHANGE_ISR, CHANGE);
 		encCount = 0;
@@ -53,8 +54,8 @@ namespace WallClimbingRobot
 	    distance = duration*0.034/2;
 	  
 	  // Prints the distance on the Serial Monitor
-	    Serial.println(distance);
-	    delay(3000);
+	   // Serial.println(distance);
+	   // delay(500);
 	}
 
 	void goForward(int speed) {
@@ -78,7 +79,28 @@ namespace WallClimbingRobot
 	}
 
 	void traverseWall() {
+		Serial.println("0");
+		servo.write(0);
+		delay(1000);
+		Serial.println("90");
+		servo.write(90);
+		delay(1000);
+		Serial.println("180");
+		servo.write(180);
+		delay(1000);
+	}
 
+	void findWall() { 
+		turn(-0.25); //left
+		goForward(255);
+		checkLimit();
+		stop(); //boundary has been hit
+
+		drive(-0.55);
+		turn(0.25);
+		goForward(255);
+		checkLimit();
+		stop();
 	}
 
 	void checkLimit() {
@@ -94,6 +116,8 @@ namespace WallClimbingRobot
 	}
 
   void findObject() {
+  	int prevTime;
+  	int distToWall = 0;
 
 	Serial.println("Before Forward Drive");
 	drive(0.1);
@@ -105,7 +129,7 @@ namespace WallClimbingRobot
 	stop();
 
 	Serial.println("Before Backward Drive");
-	drive(-0.05);
+	drive(-0.1);
 	Serial.println("After Backward Drive");
 	turn(0.25);
 
@@ -113,20 +137,41 @@ namespace WallClimbingRobot
 	checkLimit();	
 	stop();
 
-	servo.write(90);
+	drive(-0.1);
+	turn(0.25);
+
+	Serial.println("Turn Servo");
+	servo.write(0);
 	delay(500);
+
+	stop();
+	prevTime = millis();
+	while((millis() - prevTime) < 3000) 
+	{
+		readDistance();
+		distToWall = (distToWall + distance)/2;
+		Serial.print("distToWall: ");
+		Serial.println(distToWall);
+	}
+	
 	goForward(150);
 
-	while(distance > 220) {
+	while(distance >= (distToWall - 5.0)) {
+		Serial.print("Distance: ");
 		Serial.println(distance);
 		readDistance();
 	}
 
 	stop();
 	turn(0.25);
+	Serial.println("Servo Turn");
+	servo.write(90);
+	delay(500);
+	Serial.println("Going towards object");
 	goForward(255);
 	checkLimit();	
 	stop();
+
   }
 
 	void drive(double distanceFactor)
@@ -171,6 +216,7 @@ namespace WallClimbingRobot
 			{
 				Serial.print("Encoder count: ");
 				Serial.println(encCount);
+			
 			}
 		}
 
@@ -181,7 +227,7 @@ namespace WallClimbingRobot
 
 		encCount = 0;
 	}
-
+//106.68cm
 	void turn(double turnFactor)
 	{
 		encCount = 0;
