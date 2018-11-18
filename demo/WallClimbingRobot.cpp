@@ -27,7 +27,7 @@ namespace WallClimbingRobot
 		pinMode(TRIG_PIN, OUTPUT);
 		pinMode(ECHO_PIN, INPUT);
 
-		servo.attach(9);
+		servo.attach(SERVO_PIN);
 	
 		attachInterrupt(digitalPinToInterrupt(ENC_A_PIN_NUM), ENC_PHASE_A_CHANGE_ISR, CHANGE);
 		encCount = 0;
@@ -78,12 +78,12 @@ namespace WallClimbingRobot
 	}
 
 	void traverseWall() {
-		servo.write(90);
+
 	}
 
 	void checkLimit() {
 		int left = 0;
-		
+
 		while(left == 0) 
 		{
 		  left = digitalRead(LEFT_LIMIT);
@@ -114,6 +114,7 @@ namespace WallClimbingRobot
 	stop();
 
 	servo.write(90);
+	delay(500);
 	goForward(150);
 
 	while(distance > 220) {

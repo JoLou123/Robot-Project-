@@ -11,7 +11,7 @@
 
 #define LEFT_LIMIT (25)
 
-#define SERVO_PIN (9)
+#define SERVO_PIN (44)
 
 #define TRIG_PIN (22)
 #define ECHO_PIN (23)
