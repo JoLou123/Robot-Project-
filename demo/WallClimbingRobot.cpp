@@ -13,6 +13,7 @@ namespace WallClimbingRobot
 	Servo servo;
 	int pos;
 	int distance;
+	int duration;
 	int encCount;
 
 	void setup()
@@ -35,18 +36,18 @@ namespace WallClimbingRobot
 
 	void readDistance() {
 		// Clears the trigPin
-	    digitalWrite(trigPin, LOW);
+	    digitalWrite(TRIG_PIN, LOW);
 	    delayMicroseconds(2);
 	  
 	  // Sets the trigPin to LOW,HIGH, then LOW state for clean signal
-	    digitalWrite(trigPin, LOW);
+	    digitalWrite(TRIG_PIN, LOW);
 	    delayMicroseconds(5);
-	    digitalWrite(trigPin, HIGH);
+	    digitalWrite(TRIG_PIN, HIGH);
 	    delayMicroseconds(10);
-	    digitalWrite(trigPin, LOW);
+	    digitalWrite(TRIG_PIN, LOW);
 	  
 	  // Reads the echoPin, returns the sound wave travel time in microseconds
-	    duration = pulseIn(echoPin, HIGH);
+	    duration = pulseIn(ECHO_PIN, HIGH);
 	  
 	  // Calculating the distance
 	    distance = duration*0.034/2;
@@ -77,10 +78,12 @@ namespace WallClimbingRobot
 	}
 
 	void traverseWall() {
-
+		servo.write(90);
 	}
 
 	void checkLimit() {
+		int left = 0;
+		
 		while(left == 0) 
 		{
 		  left = digitalRead(LEFT_LIMIT);
@@ -92,7 +95,6 @@ namespace WallClimbingRobot
 
   void findObject() {
 
-	int left = 0;
 	Serial.println("Before Forward Drive");
 	drive(0.1);
 	Serial.println("After Forward Drive");
@@ -124,8 +126,6 @@ namespace WallClimbingRobot
 	goForward(255);
 	checkLimit();	
 	stop();
-	
-
   }
 
 	void drive(double distanceFactor)
