@@ -42,7 +42,7 @@ namespace WallClimbingRobot
 		digitalWrite(TRIG_PIN, LOW);
 		delayMicroseconds(2);
 
-		// Sets the trigPin to LOW,HIGH, then LOW state for clean signal
+			// Sets the trigPin to LOW,HIGH, then LOW state for clean signal
 		digitalWrite(TRIG_PIN, LOW);
 		delayMicroseconds(5);
 		digitalWrite(TRIG_PIN, HIGH);
@@ -54,10 +54,6 @@ namespace WallClimbingRobot
 
 		// Calculating the distance
 		distance = duration*0.034/2;
-
-		// Prints the distance on the Serial Monitor
-		Serial.println(distance);
-		delay(3000);
 	}
 
 	void driveGivenSpeed(double speedFactor)
@@ -81,6 +77,7 @@ namespace WallClimbingRobot
 		motor4.run(RELEASE);
 	}
 
+	// Note: 106.68cm to peak of wall
 	void traverseWall()
 	{
 		Serial.println("Driving given distance...");
@@ -149,6 +146,19 @@ namespace WallClimbingRobot
 				return;
 			}
 		}
+
+	void findWall()
+	{ 
+		turn(-0.25); //left
+		goForward(255);
+		checkLimit();
+		stop(); //boundary has been hit
+
+		drive(-0.55);
+		turn(0.25);
+		goForward(255);
+		checkLimit();
+		stop();
 	}
 
 	void waitForLimitSwitchPress()
@@ -164,39 +174,61 @@ namespace WallClimbingRobot
 		left = 0; 
 	}
 
-	void findObject()
-	{
+	void findObject() {
+		int prevTime;
+		int distToWall = 0;
+
 		Serial.println("Before Forward Drive");
-		driveGivenDistance(0.1);
+		drive(0.1);
 		Serial.println("After Forward Drive");
-		turnDistance(-0.25);
-	  
-		driveGivenSpeed(1);
-		waitForLimitSwitchPress();	
+		turn(-0.25);
+
+		goForward(255);
+		checkLimit();	
 		stop();
 
 		Serial.println("Before Backward Drive");
-		driveGivenDistance(-0.05);
+		drive(-0.1);
 		Serial.println("After Backward Drive");
-		turnDistance(0.25);
+		turn(0.25);
 
-		driveGivenSpeed(1);
-		waitForLimitSwitchPress();	
+		goForward(255);
+		checkLimit();	
 		stop();
 
-		servo.write(90);
+		drive(-0.1);
+		turn(0.25);
+
+		Serial.println("Turn Servo");
+		servo.write(0);
 		delay(500);
-		driveGivenSpeed(0.6);
-		
-		while(distance > 220) {
+
+		stop();
+		prevTime = millis();
+		while((millis() - prevTime) < 3000) 
+		{
+			readDistance();
+			distToWall = (distToWall + distance)/2;
+			Serial.print("distToWall: ");
+			Serial.println(distToWall);
+		}
+
+		goForward(150);
+
+		while(distance >= (distToWall - 5.0)) {
+			Serial.print("Distance: ");
 			Serial.println(distance);
 			readDistance();
 		}
 
 		stop();
-		turnDistance(0.25);
-		driveGivenSpeed(1);
-		waitForLimitSwitchPress();	
+		turn(0.25);
+		Serial.println("Servo Turn");
+		servo.write(90);
+		delay(500);
+		Serial.println("Going towards object");
+		goForward(255);
+		checkLimit();	
 		stop();
 	}
 
@@ -242,6 +274,7 @@ namespace WallClimbingRobot
 			{
 				Serial.print("Encoder count: ");
 				Serial.println(encCount);
+			
 			}
 		}
 

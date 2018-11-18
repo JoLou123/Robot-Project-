@@ -8,9 +8,6 @@ void setup() {
 }
 
 void loop() {
-  //WallClimbingRobot::waitForTiltSwitchChange();
-  //delay(4000);
-  WallClimbingRobot::waitForLimitSwitchPress();
-  WallClimbingRobot::traverseWall();
-  delay(4000);
+  delay(3000);
+  WallClimbingRobot::findObject();
 }
