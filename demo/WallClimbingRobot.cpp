@@ -146,18 +146,19 @@ namespace WallClimbingRobot
 				return;
 			}
 		}
+	}
 
 	void findWall()
 	{ 
-		turn(-0.25); //left
-		goForward(255);
-		checkLimit();
+		turnGivenDistance(-0.25); //left
+		driveGivenSpeed(255);
+		waitForLimitSwitchPress();
 		stop(); //boundary has been hit
 
-		drive(-0.55);
-		turn(0.25);
-		goForward(255);
-		checkLimit();
+		driveGivenDistance(-0.55);
+		turnGivenDistance(0.25);
+		driveGivenSpeed(255);
+		waitForLimitSwitchPress();
 		stop();
 	}
 
@@ -178,26 +179,26 @@ namespace WallClimbingRobot
 		int prevTime;
 		int distToWall = 0;
 
-		Serial.println("Before Forward Drive");
+		/*Serial.println("Before Forward Drive");
 		drive(0.1);
 		Serial.println("After Forward Drive");
 		turn(-0.25);
 
-		goForward(255);
-		checkLimit();	
+		driveGivenSpeed(255);
+		waitForLimitSwitchPress();	
 		stop();
 
 		Serial.println("Before Backward Drive");
 		drive(-0.1);
 		Serial.println("After Backward Drive");
-		turn(0.25);
+		turnGivenDistance(0.25);
 
-		goForward(255);
-		checkLimit();	
+		driveGivenSpeed(255);
+		waitForLimitSwitchPress();	
 		stop();
 
 		drive(-0.1);
-		turn(0.25);
+		turnGivenDistance(0.25);*/
 
 		Serial.println("Turn Servo");
 		servo.write(0);
@@ -212,23 +213,25 @@ namespace WallClimbingRobot
 			Serial.print("distToWall: ");
 			Serial.println(distToWall);
 		}
+		
+		driveGivenSpeed(150);
 
-		goForward(150);
-
-		while(distance >= (distToWall - 5.0)) {
+		while(distance >= (distToWall - 25.0)) {
 			Serial.print("Distance: ");
 			Serial.println(distance);
 			readDistance();
 		}
 
+		Serial.print("Distance Stopped: ");
+		Serial.println(distance);
 		stop();
-		turn(0.25);
+		turnGivenDistance(0.25);
 		Serial.println("Servo Turn");
 		servo.write(90);
 		delay(500);
 		Serial.println("Going towards object");
-		goForward(255);
-		checkLimit();	
+		driveGivenSpeed(255);
+		waitForLimitSwitchPress();	
 		stop();
 	}
 
@@ -286,7 +289,7 @@ namespace WallClimbingRobot
 		encCount = 0;
 	}
 
-	void turnDistance(double turnFactor)
+	void turnGivenDistance(double turnFactor)
 	{
 		encCount = 0;
 		int totalEncCount = ENC_DIR_FACTOR * (int)(turnFactor * ENC_COUNT_PER_ROBOT_ROTATION);

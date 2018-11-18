@@ -6,7 +6,7 @@
 #define ENC_DIR_FACTOR (-1) // 1 for positive forwards, -1 for positive backwards
 
 #define ENC_COUNT_PER_METRE (6635)
-#define ENC_COUNT_PER_ROBOT_ROTATION (4062)
+#define ENC_COUNT_PER_ROBOT_ROTATION (4650)
 
 #define ENC_A_PIN (18)
 #define ENC_B_PIN (19)
@@ -38,8 +38,7 @@ namespace WallClimbingRobot
 
 	// Turn robot a factor of a 360 degree turn
 	// Positive for right turn, negative for left turn
-	void turnDistance(double turnFactor);
-
+	void turnGivenDistance(double turnFactor);
 
 	void waitForTiltSwitchChange();
 	void waitForLimitSwitchPress();
