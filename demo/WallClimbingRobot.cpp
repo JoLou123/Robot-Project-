@@ -20,16 +20,19 @@ namespace WallClimbingRobot
 	{
 		Serial.begin(9600); // For debugging
 
-		pinMode(ENC_A_PIN_NUM, INPUT);
-		pinMode(ENC_B_PIN_NUM, INPUT);
+		pinMode(ENC_A_PIN, INPUT);
+		pinMode(ENC_B_PIN, INPUT);
 
-		pinMode(LEFT_LIMIT, INPUT);
+		pinMode(LEFT_LIMIT_PIN, INPUT);
 		pinMode(TRIG_PIN, OUTPUT);
 		pinMode(ECHO_PIN, INPUT);
 
 		servo.attach(SERVO_PIN);
+
+		pinMode(TILT_SWITCH_PIN, INPUT);
+  		digitalWrite(TILT_SWITCH_PIN, HIGH); // Internal pull-up
 	
-		attachInterrupt(digitalPinToInterrupt(ENC_A_PIN_NUM), ENC_PHASE_A_CHANGE_ISR, CHANGE);
+		attachInterrupt(digitalPinToInterrupt(ENC_A_PIN), ENC_PHASE_A_CHANGE_ISR, CHANGE);
 		encCount = 0;
 		Serial.println("WallClimbingRobot setup complete");
 	}
@@ -86,48 +89,47 @@ namespace WallClimbingRobot
 
 		while(left == 0) 
 		{
-		  left = digitalRead(LEFT_LIMIT);
+		  left = digitalRead(LEFT_LIMIT_PIN);
 		  //Serial.println(left);
 		}
 
 		left = 0; 
 	}
 
-  void findObject() {
+	void findObject() {
+		Serial.println("Before Forward Drive");
+		drive(0.1);
+		Serial.println("After Forward Drive");
+		turn(-0.25);
+	  
+		goForward(MAX_MOTOR_SPEED);
+		checkLimit();	
+		stop();
 
-	Serial.println("Before Forward Drive");
-	drive(0.1);
-	Serial.println("After Forward Drive");
-	turn(-0.25);
-  
-	goForward(255);
-	checkLimit();	
-	stop();
+		Serial.println("Before Backward Drive");
+		drive(-0.05);
+		Serial.println("After Backward Drive");
+		turn(0.25);
 
-	Serial.println("Before Backward Drive");
-	drive(-0.05);
-	Serial.println("After Backward Drive");
-	turn(0.25);
+		goForward(MAX_MOTOR_SPEED);
+		checkLimit();	
+		stop();
 
-	goForward(255);
-	checkLimit();	
-	stop();
+		servo.write(90);
+		delay(500);
+		goForward(150);
+		
+		while(distance > 220) {
+			Serial.println(distance);
+			readDistance();
+		}
 
-	servo.write(90);
-	delay(500);
-	goForward(150);
-
-	while(distance > 220) {
-		Serial.println(distance);
-		readDistance();
+		stop();
+		turn(0.25);
+		goForward(MAX_MOTOR_SPEED);
+		checkLimit();	
+		stop();
 	}
-
-	stop();
-	turn(0.25);
-	goForward(255);
-	checkLimit();	
-	stop();
-  }
 
 	void drive(double distanceFactor)
 	{
@@ -139,15 +141,15 @@ namespace WallClimbingRobot
 		if (distanceFactor > 0) {
 			// Left motors
 			motor1.run(FORWARD);
-			motor1.setSpeed((int)(255));
+			motor1.setSpeed(MAX_MOTOR_SPEED);
 			motor4.run(FORWARD);
-			motor4.setSpeed((int)(255));
+			motor4.setSpeed(MAX_MOTOR_SPEED);
 
 			// Right motors
 			motor2.run(FORWARD);
-			motor2.setSpeed(255);
+			motor2.setSpeed(MAX_MOTOR_SPEED);
 			motor3.run(FORWARD);
-			motor3.setSpeed(255);
+			motor3.setSpeed(MAX_MOTOR_SPEED);
 
 			while(encCount > totalEncCount)
 			{
@@ -157,15 +159,15 @@ namespace WallClimbingRobot
 		} else { 
 			// Left motors
 			motor1.run(BACKWARD);
-			motor1.setSpeed(255);
+			motor1.setSpeed(MAX_MOTOR_SPEED);
 			motor4.run(BACKWARD);
-			motor4.setSpeed(255);
+			motor4.setSpeed(MAX_MOTOR_SPEED);
 
 			// Right motors
 			motor2.run(BACKWARD);
-			motor2.setSpeed(255);
+			motor2.setSpeed(MAX_MOTOR_SPEED);
 			motor3.run(BACKWARD);
-			motor3.setSpeed(255);
+			motor3.setSpeed(MAX_MOTOR_SPEED);
 
 			while(encCount < totalEncCount)
 			{
@@ -194,15 +196,15 @@ namespace WallClimbingRobot
 		{
 			// Left motors
 			motor1.run(FORWARD);
-			motor1.setSpeed(255);
+			motor1.setSpeed(MAX_MOTOR_SPEED);
 			motor4.run(FORWARD);
-			motor4.setSpeed(255);
+			motor4.setSpeed(MAX_MOTOR_SPEED);
 
 			// Right motors
 			motor2.run(BACKWARD);
-			motor2.setSpeed(255);
+			motor2.setSpeed(MAX_MOTOR_SPEED);
 			motor3.run(BACKWARD);
-			motor3.setSpeed(255);
+			motor3.setSpeed(MAX_MOTOR_SPEED);
 
 			while(encCount > totalEncCount)
 			{
@@ -216,15 +218,15 @@ namespace WallClimbingRobot
 		{
 			// Left motors
 			motor1.run(BACKWARD);
-			motor1.setSpeed(255);
+			motor1.setSpeed(MAX_MOTOR_SPEED);
 			motor4.run(BACKWARD);
-			motor4.setSpeed(255);
+			motor4.setSpeed(MAX_MOTOR_SPEED);
 
 			// Right motors
 			motor2.run(FORWARD);
-			motor2.setSpeed(255);
+			motor2.setSpeed(MAX_MOTOR_SPEED);
 			motor3.run(FORWARD);
-			motor3.setSpeed(255);
+			motor3.setSpeed(MAX_MOTOR_SPEED);
 
 			while(encCount < totalEncCount)
 			{
@@ -243,9 +245,9 @@ namespace WallClimbingRobot
 
 	void ENC_PHASE_A_CHANGE_ISR()
 	{
-		if(digitalRead(ENC_B_PIN_NUM) == 0)
+		if(digitalRead(ENC_B_PIN) == 0)
 		{
-			if (digitalRead(ENC_A_PIN_NUM) == 0)
+			if (digitalRead(ENC_A_PIN) == 0)
 			{
 				// A fell, B is low
 				encCount--; // Moving backwards
