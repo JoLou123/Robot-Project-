@@ -81,14 +81,10 @@ namespace WallClimbingRobot
 	void traverseWall() {
 		Serial.println("0");
 		servo.write(0);
-		delay(1000);
-		Serial.println("90");
-		servo.write(90);
-		delay(1000);
-		Serial.println("180");
-		servo.write(180);
-		delay(1000);
+		
 	}
+
+
 
 	void findWall() { 
 		turn(-0.25); //left
@@ -119,7 +115,7 @@ namespace WallClimbingRobot
   	int prevTime;
   	int distToWall = 0;
 
-	Serial.println("Before Forward Drive");
+	/*Serial.println("Before Forward Drive");
 	drive(0.1);
 	Serial.println("After Forward Drive");
 	turn(-0.25);
@@ -138,7 +134,7 @@ namespace WallClimbingRobot
 	stop();
 
 	drive(-0.1);
-	turn(0.25);
+	turn(0.25);*/
 
 	Serial.println("Turn Servo");
 	servo.write(0);
@@ -156,12 +152,14 @@ namespace WallClimbingRobot
 	
 	goForward(150);
 
-	while(distance >= (distToWall - 5.0)) {
+	while(distance >= (distToWall - 25.0)) {
 		Serial.print("Distance: ");
 		Serial.println(distance);
 		readDistance();
 	}
 
+	Serial.print("Distance Stopped: ");
+	Serial.println(distance);
 	stop();
 	turn(0.25);
 	Serial.println("Servo Turn");
