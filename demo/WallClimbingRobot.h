@@ -11,9 +11,7 @@
 
 #define LEFT_LIMIT (25)
 
-#define SERVO_PIN (28)
-
-#define POWER_PIN (53)
+#define SERVO_PIN (9)
 
 #define TRIG_PIN (22)
 #define ECHO_PIN (23)
@@ -27,6 +25,8 @@ namespace WallClimbingRobot
 	void goForward(int speed);
 
 	void stop();
+
+	void checkLimit();
 
 	void traverseWall();
 

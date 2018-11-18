@@ -10,6 +10,9 @@ namespace WallClimbingRobot
 	AF_DCMotor motor3(3, MOTOR34_1KHZ); // Create motor #3, 1KHz pwm
 	AF_DCMotor motor4(4, MOTOR34_1KHZ); // Create motor #4, 1KHz pwm
 
+	Servo servo;
+	int pos;
+	int distance;
 	int encCount;
 
 	void setup()
@@ -22,10 +25,35 @@ namespace WallClimbingRobot
 		pinMode(LEFT_LIMIT, INPUT);
 		pinMode(TRIG_PIN, OUTPUT);
 		pinMode(ECHO_PIN, INPUT);
+
+		servo.attach(9);
 	
 		attachInterrupt(digitalPinToInterrupt(ENC_A_PIN_NUM), ENC_PHASE_A_CHANGE_ISR, CHANGE);
 		encCount = 0;
 		Serial.println("WallClimbingRobot setup complete");
+	}
+
+	void readDistance() {
+		// Clears the trigPin
+	    digitalWrite(trigPin, LOW);
+	    delayMicroseconds(2);
+	  
+	  // Sets the trigPin to LOW,HIGH, then LOW state for clean signal
+	    digitalWrite(trigPin, LOW);
+	    delayMicroseconds(5);
+	    digitalWrite(trigPin, HIGH);
+	    delayMicroseconds(10);
+	    digitalWrite(trigPin, LOW);
+	  
+	  // Reads the echoPin, returns the sound wave travel time in microseconds
+	    duration = pulseIn(echoPin, HIGH);
+	  
+	  // Calculating the distance
+	    distance = duration*0.034/2;
+	  
+	  // Prints the distance on the Serial Monitor
+	    Serial.println(distance);
+	    delay(3000);
 	}
 
 	void goForward(int speed) {
@@ -44,6 +72,22 @@ namespace WallClimbingRobot
 		motor2.run(RELEASE);
 		motor3.run(RELEASE);
 		motor4.run(RELEASE);
+
+		delay(1000);
+	}
+
+	void traverseWall() {
+
+	}
+
+	void checkLimit() {
+		while(left == 0) 
+		{
+		  left = digitalRead(LEFT_LIMIT);
+		  //Serial.println(left);
+		}
+
+		left = 0; 
 	}
 
   void findObject() {
@@ -55,31 +99,33 @@ namespace WallClimbingRobot
 	turn(-0.25);
   
 	goForward(255);
-
-	while(left == 0) 
-	{
-	  left = digitalRead(LEFT_LIMIT);
-	  //Serial.println(left);
-	}
-
-	left = 0; 
-
+	checkLimit();	
 	stop();
 
-	delay(1000);
-	Serial.println("Before Backwrd Drive");
+	Serial.println("Before Backward Drive");
 	drive(-0.05);
-	Serial.println("After Bakcward Drive");
+	Serial.println("After Backward Drive");
 	turn(0.25);
 
 	goForward(255);
+	checkLimit();	
+	stop();
 
-	while(left == 0) 
-	{
-	  left = digitalRead(LEFT_LIMIT);
+	servo.write(90);
+	goForward(150);
+
+	while(distance > 220) {
+		Serial.println(distance);
+		readDistance();
 	}
 
 	stop();
+	turn(0.25);
+	goForward(255);
+	checkLimit();	
+	stop();
+	
+
   }
 
 	void drive(double distanceFactor)
@@ -126,7 +172,6 @@ namespace WallClimbingRobot
 				Serial.println(encCount);
 			}
 		}
-
 
 		motor1.run(RELEASE);
 		motor2.run(RELEASE);
