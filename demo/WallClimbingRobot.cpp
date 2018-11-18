@@ -42,7 +42,7 @@ namespace WallClimbingRobot
 		digitalWrite(TRIG_PIN, LOW);
 		delayMicroseconds(2);
 
-			// Sets the trigPin to LOW,HIGH, then LOW state for clean signal
+		// Sets the trigPin to LOW,HIGH, then LOW state for clean signal
 		digitalWrite(TRIG_PIN, LOW);
 		delayMicroseconds(5);
 		digitalWrite(TRIG_PIN, HIGH);
@@ -103,49 +103,50 @@ namespace WallClimbingRobot
 
 	void waitForTiltSwitchChange()
 	{
-		int lastTiltStateChangeTime = millis();
-		int elapsedContinuousTimeAtNewState = 0;
-		int debounceTime = 500; // Milliseconds
+		int prevStableState = getTiltSwitchState();
+		Serial.print("Previous stable tilt switch state: ");
+		Serial.println(prevStableState);
 
-		int oldTiltState = digitalRead(TILT_SWITCH_PIN);
+		int curStableState = prevStableState;
 
-		int curTiltState;
-		int prevTiltState = LOW;
+		while (curStableState == prevStableState)
+		{
+			curStableState = getTiltSwitchState();
+			Serial.print("Current stable tilt switch state: ");
+			Serial.println(curStableState);
+		}
 
-		Serial.print("Previous tilt switch state: ");
-		Serial.println(curTiltState);
+		Serial.println("Tilt switch state changed!");
+	}
+
+	int getTiltSwitchState()
+	{
+		int curState;
+		int prevState = LOW;
+
+		int lastStateChangeTime = millis();
 
 		while (1)
 		{
-			curTiltState = digitalRead(TILT_SWITCH_PIN);
+			curState = digitalRead(TILT_SWITCH_PIN);
 			Serial.print("Current tilt switch state: ");
-			Serial.println(curTiltState);
+			Serial.println(curState);
 
-			if (curTiltState != prevTiltState)
+			if (curState != prevState)
 			{
-				lastTiltStateChangeTime = millis();
-				prevTiltState = curTiltState;
+				lastStateChangeTime = millis();
+				prevState = curState;
 			}
 
-			if (curTiltState != oldTiltState)
+			// If tilt switch has settled
+			if (millis() - lastStateChangeTime > TILT_SWITCH_DEBOUNCE_TIME)
 			{
-				elapsedContinuousTimeAtNewState = millis() - lastTiltStateChangeTime;
-			}
-			else
-			{
-				elapsedContinuousTimeAtNewState = 0;
-			}
-
-			Serial.print("Elapsed continuous time at new state: ");
-			Serial.println(elapsedContinuousTimeAtNewState);
-
-			// If tilt switch has changed and settled
-			if (elapsedContinuousTimeAtNewState > debounceTime)
-			{
-				Serial.println("Tilt switch state changed and settled!");
-				return;
+				Serial.println("Tilt switch state settled!");
+				break;
 			}
 		}
+
+		return curState;
 	}
 
 	void findWall()
@@ -168,8 +169,8 @@ namespace WallClimbingRobot
 
 		while(left == 0) 
 		{
-		  left = digitalRead(LEFT_LIMIT_PIN);
-		  //Serial.println(left);
+			left = digitalRead(LEFT_LIMIT_PIN);
+			//Serial.println(left);
 		}
 
 		left = 0; 
