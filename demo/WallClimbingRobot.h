@@ -24,6 +24,12 @@ namespace WallClimbingRobot
 
 	void findObject();
 
+	void goForward(int speed);
+
+	void stop();
+
+	void traverseWall();
+
 	// Move robot straight a factor of 1 metre
 	void drive(double distanceFactor);
 

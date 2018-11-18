@@ -19,70 +19,67 @@ namespace WallClimbingRobot
 		pinMode(ENC_A_PIN_NUM, INPUT);
 		pinMode(ENC_B_PIN_NUM, INPUT);
 
-    pinMode(LEFT_LIMIT, INPUT);
-    pinMode(TRIG_PIN, OUTPUT);
-    pinMode(ECHO_PIN, INPUT);
-    
+		pinMode(LEFT_LIMIT, INPUT);
+		pinMode(TRIG_PIN, OUTPUT);
+		pinMode(ECHO_PIN, INPUT);
+	
 		attachInterrupt(digitalPinToInterrupt(ENC_A_PIN_NUM), ENC_PHASE_A_CHANGE_ISR, CHANGE);
 		encCount = 0;
 		Serial.println("WallClimbingRobot setup complete");
 	}
 
+	void goForward(int speed) {
+		motor1.run(FORWARD);
+		motor1.setSpeed(speed);
+		motor4.run(FORWARD);
+		motor4.setSpeed(speed);
+		motor2.run(FORWARD);
+		motor2.setSpeed(speed);
+		motor3.run(FORWARD);
+		motor3.setSpeed(speed);
+	}
+
+	void stop() {
+		motor1.run(RELEASE);
+		motor2.run(RELEASE);
+		motor3.run(RELEASE);
+		motor4.run(RELEASE);
+	}
+
   void findObject() {
 
-  	int left = 0;
-  	Serial.println("Before Forward Drive");
-    drive(0.1);
-    Serial.println("After Forward Drive");
-    turn(-0.25);
+	int left = 0;
+	Serial.println("Before Forward Drive");
+	drive(0.1);
+	Serial.println("After Forward Drive");
+	turn(-0.25);
   
-    motor1.run(FORWARD);
-    motor1.setSpeed(255);
-    motor4.run(FORWARD);
-    motor4.setSpeed(255);
-    motor2.run(FORWARD);
-    motor2.setSpeed(255);
-    motor3.run(FORWARD);
-    motor3.setSpeed(255);
+	goForward(255);
 
-    while(left == 0) 
-    {
-      left = digitalRead(LEFT_LIMIT);
-      //Serial.println(left);
-    }
+	while(left == 0) 
+	{
+	  left = digitalRead(LEFT_LIMIT);
+	  //Serial.println(left);
+	}
 
-    left = 0; 
+	left = 0; 
 
-    motor1.run(RELEASE);
-    motor2.run(RELEASE);
-    motor3.run(RELEASE);
-    motor4.run(RELEASE);
+	stop();
 
-    delay(1000);
-    Serial.println("Before Backwrd Drive");
-    drive(-0.05);
-    Serial.println("After Bakcward Drive");
-    turn(0.25);
+	delay(1000);
+	Serial.println("Before Backwrd Drive");
+	drive(-0.05);
+	Serial.println("After Bakcward Drive");
+	turn(0.25);
 
-    motor1.run(FORWARD);
-    motor1.setSpeed(255);
-    motor4.run(FORWARD);
-    motor4.setSpeed(255);
-    motor2.run(FORWARD);
-    motor2.setSpeed(255);
-    motor3.run(FORWARD);
-    motor3.setSpeed(255);
+	goForward(255);
 
-    while(left == 0) 
-    {
-      left = digitalRead(LEFT_LIMIT);
-    }
+	while(left == 0) 
+	{
+	  left = digitalRead(LEFT_LIMIT);
+	}
 
-    motor1.run(RELEASE);
-    motor2.run(RELEASE);
-    motor3.run(RELEASE);
-    motor4.run(RELEASE);
-
+	stop();
   }
 
 	void drive(double distanceFactor)
