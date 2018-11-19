@@ -14,6 +14,8 @@ namespace WallClimbingRobot
 	int pos;
 	int distance;
 	int duration;
+
+	// Necessary global since it's updated by ISR
 	int encCount;
 
 	void setup()
@@ -56,7 +58,7 @@ namespace WallClimbingRobot
 		distance = duration*0.034/2;
 	}
 
-	void driveGivenSpeed(double speedFactor)
+	void driveSpeed(double speedFactor)
 	{
 		motor1.run(FORWARD);
 		motor4.run(FORWARD);
@@ -81,16 +83,16 @@ namespace WallClimbingRobot
 	void traverseWall()
 	{
 		Serial.println("Driving given distance...");
-		driveGivenDistance(0.5);
+		driveDistance(0.5);
 
 		Serial.println("Driving full speed...");
-		driveGivenSpeed(1);
+		driveSpeed(1);
 		
 		Serial.println("Waiting for tilt switch change...");
 		waitForTiltSwitchChange();
 
 		Serial.println("Driving slower speed...");
-		driveGivenSpeed(0.2);
+		driveSpeed(0.2);
 
 		Serial.println("Waiting for limit switch press...");
 		waitForLimitSwitchPress();
@@ -152,13 +154,13 @@ namespace WallClimbingRobot
 	void findWall()
 	{ 
 		turnGivenDistance(-0.25); //left
-		driveGivenSpeed(255);
+		driveSpeed(255);
 		waitForLimitSwitchPress();
 		stop(); //boundary has been hit
 
-		driveGivenDistance(-0.55);
+		driveDistance(-0.55);
 		turnGivenDistance(0.25);
-		driveGivenSpeed(255);
+		driveSpeed(255);
 		waitForLimitSwitchPress();
 		stop();
 	}
@@ -185,7 +187,7 @@ namespace WallClimbingRobot
 		Serial.println("After Forward Drive");
 		turn(-0.25);
 
-		driveGivenSpeed(255);
+		driveSpeed(255);
 		waitForLimitSwitchPress();	
 		stop();
 
@@ -194,7 +196,7 @@ namespace WallClimbingRobot
 		Serial.println("After Backward Drive");
 		turnGivenDistance(0.25);
 
-		driveGivenSpeed(255);
+		driveSpeed(255);
 		waitForLimitSwitchPress();	
 		stop();
 
@@ -206,6 +208,7 @@ namespace WallClimbingRobot
 		delay(500);
 
 		stop();
+
 		prevTime = millis();
 		while((millis() - prevTime) < 3000) 
 		{
@@ -215,7 +218,7 @@ namespace WallClimbingRobot
 			Serial.println(distToWall);
 		}
 		
-		driveGivenSpeed(150);
+		driveSpeed(150);
 
 		while(distance >= (distToWall - 25.0)) {
 			Serial.print("Distance: ");
@@ -231,12 +234,12 @@ namespace WallClimbingRobot
 		servo.write(90);
 		delay(500);
 		Serial.println("Going towards object");
-		driveGivenSpeed(255);
+		driveSpeed(255);
 		waitForLimitSwitchPress();	
 		stop();
 	}
 
-	void driveGivenDistance(double distanceFactor)
+	void driveDistance(double distanceFactor)
 	{
 		encCount = 0;
 		int totalEncCount = ENC_DIR_FACTOR * (int)(distanceFactor * ENC_COUNT_PER_METRE);

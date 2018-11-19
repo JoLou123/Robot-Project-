@@ -21,13 +21,13 @@ namespace WallClimbingRobot
 	void findObject();
 
 	// Move robot straight forward with a given factor of max speed
-	void driveGivenSpeed(double speedFactor);
+	void driveSpeed(double speedFactor);
 
 	void stop();
 	void traverseWall();
 
 	// Move robot straight forward a factor of 1 metre
-	void driveGivenDistance(double distanceFactor);
+	void driveDistance(double distanceFactor);
 
 	void findWall();
 
