@@ -97,6 +97,8 @@ namespace WallClimbingRobot
 		Serial.println("Waiting for limit switch press...");
 		waitForLimitSwitchPress();
 
+		driveDistance(0.1);
+
 		Serial.println("Stopping...");
 		stop();
 
@@ -154,13 +156,13 @@ namespace WallClimbingRobot
 	void findWall()
 	{ 
 		turnGivenDistance(-0.25); //left
-		driveSpeed(255);
+		driveSpeed(0.8);
 		waitForLimitSwitchPress();
 		stop(); //boundary has been hit
 
 		driveDistance(-0.55);
 		turnGivenDistance(0.25);
-		driveSpeed(255);
+		driveSpeed(1);
 		waitForLimitSwitchPress();
 		stop();
 	}
@@ -182,29 +184,31 @@ namespace WallClimbingRobot
 		int prevTime;
 		int distToWall = 0;
 
-		/*Serial.println("Before Forward Drive");
-		drive(0.1);
+		Serial.println("Before Forward Drive");
+		driveDistance(0.05);
 		Serial.println("After Forward Drive");
-		turn(-0.25);
+		turnGivenDistance(-0.25);
 
-		driveSpeed(255);
+		driveSpeed(0.8);
+
 		waitForLimitSwitchPress();	
 		stop();
 
 		Serial.println("Before Backward Drive");
-		drive(-0.1);
+		driveDistance(-0.1);
 		Serial.println("After Backward Drive");
 		turnGivenDistance(0.25);
 
-		driveSpeed(255);
+		driveSpeed(0.8);
+
 		waitForLimitSwitchPress();	
 		stop();
 
-		drive(-0.1);
-		turnGivenDistance(0.25);*/
+		driveDistance(-0.1);
+		turnGivenDistance(0.25);
 
 		Serial.println("Turn Servo");
-		servo.write(0);
+		servo.write(25);
 		delay(500);
 
 		stop();
@@ -218,7 +222,7 @@ namespace WallClimbingRobot
 			Serial.println(distToWall);
 		}
 		
-		driveSpeed(150);
+		driveSpeed(0.5);
 
 		while(distance >= (distToWall - 25.0)) {
 			Serial.print("Distance: ");
@@ -231,12 +235,29 @@ namespace WallClimbingRobot
 		stop();
 		turnGivenDistance(0.25);
 		Serial.println("Servo Turn");
-		servo.write(90);
+		servo.write(115);
 		delay(500);
 		Serial.println("Going towards object");
-		driveSpeed(255);
+		driveSpeed(1);
 		waitForLimitSwitchPress();	
 		stop();
+	}
+
+	void returnToWall() {
+		driveDistance(-0.12);
+		turnGivenDistance(0.25);
+		driveSpeed(1);
+		waitForLimitSwitchPress();
+		driveDistance(-0.55);
+		driveSpeed(1);
+	}
+
+	void test() {
+		
+	}
+
+	void returnToBase1() {
+
 	}
 
 	void driveDistance(double distanceFactor)
