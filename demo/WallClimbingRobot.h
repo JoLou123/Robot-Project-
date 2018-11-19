@@ -36,7 +36,7 @@ namespace WallClimbingRobot
 
 	// Turn robot a factor of a 360 degree turn
 	// Positive for right turn, negative for left turn
-	void turnGivenDistance(double turnFactor);
+	void turnDistance(double turnFactor);
 
 	void waitForLimitSwitchPress();
 	void waitForTiltSwitchChange();

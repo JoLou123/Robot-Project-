@@ -155,13 +155,13 @@ namespace WallClimbingRobot
 
 	void findWall()
 	{ 
-		turnGivenDistance(-0.25); //left
+		turnDistance(-0.25); //left
 		driveSpeed(0.8);
 		waitForLimitSwitchPress();
 		stop(); //boundary has been hit
 
 		driveDistance(-0.55);
-		turnGivenDistance(0.25);
+		turnDistance(0.25);
 		driveSpeed(1);
 		waitForLimitSwitchPress();
 		stop();
@@ -187,7 +187,7 @@ namespace WallClimbingRobot
 		Serial.println("Before Forward Drive");
 		driveDistance(0.05);
 		Serial.println("After Forward Drive");
-		turnGivenDistance(-0.25);
+		turnDistance(-0.25);
 
 		driveSpeed(0.8);
 
@@ -197,7 +197,7 @@ namespace WallClimbingRobot
 		Serial.println("Before Backward Drive");
 		driveDistance(-0.1);
 		Serial.println("After Backward Drive");
-		turnGivenDistance(0.25);
+		turnDistance(0.25);
 
 		driveSpeed(0.8);
 
@@ -205,7 +205,7 @@ namespace WallClimbingRobot
 		stop();
 
 		driveDistance(-0.1);
-		turnGivenDistance(0.25);
+		turnDistance(0.25);
 
 		Serial.println("Turn Servo");
 		servo.write(25);
@@ -233,7 +233,7 @@ namespace WallClimbingRobot
 		Serial.print("Distance Stopped: ");
 		Serial.println(distance);
 		stop();
-		turnGivenDistance(0.25);
+		turnDistance(0.25);
 		Serial.println("Servo Turn");
 		servo.write(115);
 		delay(500);
@@ -245,7 +245,7 @@ namespace WallClimbingRobot
 
 	void returnToWall() {
 		driveDistance(-0.12);
-		turnGivenDistance(0.25);
+		turnDistance(0.25);
 		driveSpeed(1);
 		waitForLimitSwitchPress();
 		driveDistance(-0.55);
@@ -314,7 +314,7 @@ namespace WallClimbingRobot
 		encCount = 0;
 	}
 
-	void turnGivenDistance(double turnFactor)
+	void turnDistance(double turnFactor)
 	{
 		encCount = 0;
 		int totalEncCount = ENC_DIR_FACTOR * (int)(turnFactor * ENC_COUNT_PER_ROBOT_ROTATION);
