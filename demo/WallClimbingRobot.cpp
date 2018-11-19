@@ -95,6 +95,8 @@ namespace WallClimbingRobot
 		Serial.println("Waiting for limit switch press...");
 		waitForLimitSwitchPress();
 
+		driveGivenDistance(0.1);
+
 		Serial.println("Stopping...");
 		stop();
 
@@ -151,13 +153,13 @@ namespace WallClimbingRobot
 	void findWall()
 	{ 
 		turnGivenDistance(-0.25); //left
-		driveGivenSpeed(255);
+		driveGivenSpeed(0.8);
 		waitForLimitSwitchPress();
 		stop(); //boundary has been hit
 
 		driveGivenDistance(-0.55);
 		turnGivenDistance(0.25);
-		driveGivenSpeed(255);
+		driveGivenSpeed(1);
 		waitForLimitSwitchPress();
 		stop();
 	}
@@ -179,29 +181,29 @@ namespace WallClimbingRobot
 		int prevTime;
 		int distToWall = 0;
 
-		/*Serial.println("Before Forward Drive");
-		drive(0.1);
+		Serial.println("Before Forward Drive");
+		driveGivenDistance(0.05);
 		Serial.println("After Forward Drive");
-		turn(-0.25);
+		turnGivenDistance(-0.25);
 
-		driveGivenSpeed(255);
+		driveGivenSpeed(0.8);
 		waitForLimitSwitchPress();	
 		stop();
 
 		Serial.println("Before Backward Drive");
-		drive(-0.1);
+		driveGivenDistance(-0.1);
 		Serial.println("After Backward Drive");
 		turnGivenDistance(0.25);
 
-		driveGivenSpeed(255);
+		driveGivenSpeed(0.8);
 		waitForLimitSwitchPress();	
 		stop();
 
-		drive(-0.1);
-		turnGivenDistance(0.25);*/
+		driveGivenDistance(-0.1);
+		turnGivenDistance(0.25);
 
 		Serial.println("Turn Servo");
-		servo.write(0);
+		servo.write(25);
 		delay(500);
 
 		stop();
@@ -214,7 +216,7 @@ namespace WallClimbingRobot
 			Serial.println(distToWall);
 		}
 		
-		driveGivenSpeed(150);
+		driveGivenSpeed(0.5);
 
 		while(distance >= (distToWall - 25.0)) {
 			Serial.print("Distance: ");
@@ -227,12 +229,29 @@ namespace WallClimbingRobot
 		stop();
 		turnGivenDistance(0.25);
 		Serial.println("Servo Turn");
-		servo.write(90);
+		servo.write(115);
 		delay(500);
 		Serial.println("Going towards object");
-		driveGivenSpeed(255);
+		driveGivenSpeed(1);
 		waitForLimitSwitchPress();	
 		stop();
+	}
+
+	void returnToWall() {
+		driveGivenDistance(-0.12);
+		turnGivenDistance(0.25);
+		driveGivenSpeed(1);
+		waitForLimitSwitchPress();
+		driveGivenDistance(-0.55);
+		driveGivenSpeed(1);
+	}
+
+	void test() {
+		
+	}
+
+	void returnToBase1() {
+
 	}
 
 	void driveGivenDistance(double distanceFactor)

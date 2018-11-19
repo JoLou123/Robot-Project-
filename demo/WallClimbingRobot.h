@@ -30,11 +30,14 @@ namespace WallClimbingRobot
 
 	void stop();
 	void traverseWall();
+	void test();
 
+	void returnToBase1();
 	// Move robot straight forward a factor of 1 metre
 	void driveGivenDistance(double distanceFactor);
 
 	void findWall();
+	void returnToWall();
 
 	// Turn robot a factor of a 360 degree turn
 	// Positive for right turn, negative for left turn
