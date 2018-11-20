@@ -193,8 +193,7 @@ namespace WallClimbingRobot
 		left = 0; 
 	}
 
-	void findObject() {
-				int baseFound = 0; 
+	void findObject() { 
 		int distToWall = 0; 
 		int prevTime = 0;
 
@@ -245,7 +244,7 @@ namespace WallClimbingRobot
 		delay(500);
 		Serial.println("Going towards object");
 		Serial.println(distanceToObject);
-		driveDistance((distanceToObject + 7)/100.0);	
+		driveDistance((distanceToObject + 10)/100.0);	
 		stop();
 	}
 
@@ -255,6 +254,7 @@ namespace WallClimbingRobot
 		driveSpeed(1);
 		waitForLimitSwitchPress();
 		driveDistance(-0.55);
+		turnDistance(0.25);
 		driveSpeed(1);
 	}
 
@@ -264,36 +264,58 @@ namespace WallClimbingRobot
 	}
 
 	void returnToBase1() { //Not Tested yet
-		int prevTime = 0;
 		int distToWall = 0; 
+		int prevTime = 0;
 
-		driveSpeed(1);
+		driveDistance(0.01);
+		turnDistance(0.25);
+		driveSpeed(0.8);
 		waitForLimitSwitchPress();
-		driveDistance(-0.1);
-		turnDistance(-0.25);
+		stop();
 		servo.write(180);
 		delay(500);
 
 		prevTime = millis();
-		while((millis() - prevTime) < 3000) 
+		while((millis() - prevTime) < 2000) 
 		{
 			readDistance();
 			distToWall = (distToWall + distance)/2;
 			Serial.print("distToWall: ");
 			Serial.println(distToWall);
 		}
-		
-		driveSpeed(0.5);
 
-		while(distance >= (distToWall - 25.0)) {
-			Serial.print("Distance: ");
-			Serial.println(distance);
+		driveSpeed(-0.5);
+
+		int lastDistance = 0;
+		int objectFound = 0; 
+		int distanceToObject = 0;
+		while(objectFound == 0) {
+			Serial.print("Last Distance: ");
+			Serial.println(lastDistance);
+			lastDistance = (lastDistance + distance)/2;
+
 			readDistance();
+			if(lastDistance <= (distToWall-25.0)){
+				Serial.println(lastDistance);
+				if(distance <= (lastDistance + 2) && distance >= (lastDistance - 2)) {
+					Serial.println(distance);
+					objectFound = 1;
+					distanceToObject = distance;
+				}
+			}
 		}
 
+		Serial.print("Distance Stopped: ");
+		Serial.println(distance);
+		stop();
 		turnDistance(-0.25);
-		driveSpeed(1);
-		waitForLimitSwitchPress();
+		Serial.println("Servo Turn");
+		servo.write(90);
+		delay(500);
+		Serial.println("Going towards object");
+		Serial.println(distanceToObject);
+		driveDistance((distanceToObject + 10)/100.0);	
+		stop();
 	}
 
 	void driveDistance(double distanceFactor)

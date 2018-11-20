@@ -13,9 +13,9 @@ void loop() {
   //WallClimbingRobot::waitForLimitSwitchPress();
   //WallClimbingRobot::test();
   //WallClimbingRobot::traverseWall();
-  WallClimbingRobot::findObject();
+  //WallClimbingRobot::findObject();
   //WallClimbingRobot::returnToWall();
   //WallClimbingRobot::traverseWall();
-  //WallClimbingRobot::returnToBase1();
+  WallClimbingRobot::returnToBase1();
     
 }
