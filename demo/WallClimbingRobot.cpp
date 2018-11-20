@@ -50,7 +50,7 @@ namespace WallClimbingRobot
 		digitalWrite(TRIG_PIN, HIGH);
 		delayMicroseconds(10);
 		digitalWrite(TRIG_PIN, LOW);
-
+		//delay(50);
 		// Reads the echoPin, returns the sound wave travel time in microseconds
 		duration = pulseIn(ECHO_PIN, HIGH);
 
@@ -227,7 +227,7 @@ namespace WallClimbingRobot
 			readDistance();
 			if(lastDistance <= (distToWall-25.0)){
 				Serial.println(lastDistance);
-				if(distance <= (lastDistance + 2) && distance >= (lastDistance - 2)) {
+				if(distance <= (lastDistance + 2) && distance >= (lastDistance - 2) && distance >= 0) {
 					Serial.println(distance);
 					objectFound = 1;
 					distanceToObject = distance;
@@ -238,6 +238,7 @@ namespace WallClimbingRobot
 		Serial.print("Distance Stopped: ");
 		Serial.println(distance);
 		stop();
+		driveDistance(-0.02); //Object is usually detected early, so go a little more
 		turnDistance(0.25);
 		Serial.println("Servo Turn");
 		servo.write(90);
@@ -250,16 +251,19 @@ namespace WallClimbingRobot
 
 	void returnToWall() {
 		driveDistance(-0.12);
-		turnDistance(0.25);
+		turnDistance(-0.25);
 		driveSpeed(1);
 		waitForLimitSwitchPress();
 		driveDistance(-0.55);
-		turnDistance(0.25);
+		turnDistance(-0.25);
 		driveSpeed(1);
+		waitForLimitSwitchPress();
+		stop();
 	}
 
 	void test() { //Try finding base two from base 2 side of wall
-
+		readDistance();
+		Serial.println(distance);
 		
 	}
 
@@ -308,6 +312,7 @@ namespace WallClimbingRobot
 		Serial.print("Distance Stopped: ");
 		Serial.println(distance);
 		stop();
+		driveDistance(-0.02); //Object is usually detected early, so go a little more
 		turnDistance(-0.25);
 		Serial.println("Servo Turn");
 		servo.write(90);

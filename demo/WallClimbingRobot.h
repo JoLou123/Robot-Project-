@@ -4,7 +4,7 @@
 #define MAX_MOTOR_SPEED (255)
 #define ENC_DIR_FACTOR (-1) // 1 for positive forwards, -1 for positive backwards
 #define ENC_COUNT_PER_METRE (6635)
-#define ENC_COUNT_PER_ROBOT_ROTATION (4650)
+#define ENC_COUNT_PER_ROBOT_ROTATION (5000)  //4650 for sticky
 #define TILT_SWITCH_DEBOUNCE_TIME (500) // milliseconds
 
 #define ENC_A_PIN (18)

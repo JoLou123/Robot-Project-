@@ -8,14 +8,14 @@ void setup() {
 }
 
 void loop() {
-  delay(5000);
   //WallClimbingRobot::findWall();
-  //WallClimbingRobot::waitForLimitSwitchPress();
+  WallClimbingRobot::waitForLimitSwitchPress();
   //WallClimbingRobot::test();
   //WallClimbingRobot::traverseWall();
-  //WallClimbingRobot::findObject();
-  //WallClimbingRobot::returnToWall();
+  WallClimbingRobot::findObject();
+  WallClimbingRobot::returnToWall();
   //WallClimbingRobot::traverseWall();
-  WallClimbingRobot::returnToBase1();
-    
+  //WallClimbingRobot::returnToBase1();
+   
+  //delay(5000);
 }
