@@ -11,9 +11,9 @@ void loop() {
   delay(5000);
   //WallClimbingRobot::findWall();
   //WallClimbingRobot::waitForLimitSwitchPress();
-  WallClimbingRobot::test();
+  //WallClimbingRobot::test();
   //WallClimbingRobot::traverseWall();
-  //WallClimbingRobot::findObject();
+  WallClimbingRobot::findObject();
   //WallClimbingRobot::returnToWall();
   //WallClimbingRobot::traverseWall();
   //WallClimbingRobot::returnToBase1();

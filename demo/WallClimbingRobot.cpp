@@ -60,15 +60,28 @@ namespace WallClimbingRobot
 
 	void driveSpeed(double speedFactor)
 	{
-		motor1.run(FORWARD);
-		motor4.run(FORWARD);
-		motor2.run(FORWARD);
-		motor3.run(FORWARD);
+		if(speedFactor > 0) {
+			motor1.run(FORWARD);
+			motor4.run(FORWARD);
+			motor2.run(FORWARD);
+			motor3.run(FORWARD);
 
-		motor1.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
-		motor2.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
-		motor3.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
-		motor4.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+			motor1.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+			motor2.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+			motor3.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+			motor4.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+		} else { 
+			motor1.run(BACKWARD);
+			motor4.run(BACKWARD);
+			motor2.run(BACKWARD);
+			motor3.run(BACKWARD);
+
+			motor1.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+			motor2.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+			motor3.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+			motor4.setSpeed((int)(speedFactor * MAX_MOTOR_SPEED));
+		}
+
 	}
 
 	void stop()
@@ -181,37 +194,85 @@ namespace WallClimbingRobot
 	}
 
 	void findObject() {
-		int prevTime;
-		int distToWall = 0;
+				int baseFound = 0; 
+		int distToWall = 0; 
+		int prevTime = 0;
 
-		Serial.println("Before Forward Drive");
-		driveDistance(0.05);
-		Serial.println("After Forward Drive");
+		driveDistance(0.01);
 		turnDistance(-0.25);
-
 		driveSpeed(0.8);
-
-		waitForLimitSwitchPress();	
+		waitForLimitSwitchPress();
 		stop();
-
-		Serial.println("Before Backward Drive");
-		driveDistance(-0.1);
-		Serial.println("After Backward Drive");
-		turnDistance(0.25);
-
-		driveSpeed(0.8);
-
-		waitForLimitSwitchPress();	
-		stop();
-
-		driveDistance(-0.1);
-		turnDistance(0.25);
-
-		Serial.println("Turn Servo");
-		servo.write(25);
+		servo.write(5);
 		delay(500);
 
+		prevTime = millis();
+		while((millis() - prevTime) < 2000) 
+		{
+			readDistance();
+			distToWall = (distToWall + distance)/2;
+			Serial.print("distToWall: ");
+			Serial.println(distToWall);
+		}
+
+		driveSpeed(-0.5);
+
+		int lastDistance = 0;
+		int objectFound = 0; 
+		int distanceToObject = 0;
+		while(objectFound == 0) {
+			Serial.print("Last Distance: ");
+			Serial.println(lastDistance);
+			lastDistance = (lastDistance + distance)/2;
+
+			readDistance();
+			if(lastDistance <= (distToWall-25.0)){
+				Serial.println(lastDistance);
+				if(distance <= (lastDistance + 2) && distance >= (lastDistance - 2)) {
+					Serial.println(distance);
+					objectFound = 1;
+					distanceToObject = distance;
+				}
+			}
+		}
+
+		Serial.print("Distance Stopped: ");
+		Serial.println(distance);
 		stop();
+		turnDistance(0.25);
+		Serial.println("Servo Turn");
+		servo.write(90);
+		delay(500);
+		Serial.println("Going towards object");
+		Serial.println(distanceToObject);
+		driveDistance((distanceToObject + 7)/100.0);	
+		stop();
+	}
+
+	void returnToWall() {
+		driveDistance(-0.12);
+		turnDistance(0.25);
+		driveSpeed(1);
+		waitForLimitSwitchPress();
+		driveDistance(-0.55);
+		driveSpeed(1);
+	}
+
+	void test() { //Try finding base two from base 2 side of wall
+
+		
+	}
+
+	void returnToBase1() { //Not Tested yet
+		int prevTime = 0;
+		int distToWall = 0; 
+
+		driveSpeed(1);
+		waitForLimitSwitchPress();
+		driveDistance(-0.1);
+		turnDistance(-0.25);
+		servo.write(180);
+		delay(500);
 
 		prevTime = millis();
 		while((millis() - prevTime) < 3000) 
@@ -230,34 +291,9 @@ namespace WallClimbingRobot
 			readDistance();
 		}
 
-		Serial.print("Distance Stopped: ");
-		Serial.println(distance);
-		stop();
-		turnDistance(0.25);
-		Serial.println("Servo Turn");
-		servo.write(115);
-		delay(500);
-		Serial.println("Going towards object");
-		driveSpeed(1);
-		waitForLimitSwitchPress();	
-		stop();
-	}
-
-	void returnToWall() {
-		driveDistance(-0.12);
-		turnDistance(0.25);
+		turnDistance(-0.25);
 		driveSpeed(1);
 		waitForLimitSwitchPress();
-		driveDistance(-0.55);
-		driveSpeed(1);
-	}
-
-	void test() {
-		
-	}
-
-	void returnToBase1() {
-
 	}
 
 	void driveDistance(double distanceFactor)
