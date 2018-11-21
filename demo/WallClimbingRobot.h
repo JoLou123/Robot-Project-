@@ -31,6 +31,7 @@ namespace WallClimbingRobot
 	// Move robot straight forward a factor of 1 metre
 	// Doesn't stop after driving the distance
 	// NOTE: Use only positive values for speedFactor
+	// ALWAYS REMEMBER TO ADD A STOP AFTER THIS COMMAND
 	void driveDistance(double distanceFactor, double speedFactor);
 
 	void findWall();

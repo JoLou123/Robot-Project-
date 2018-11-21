@@ -120,7 +120,7 @@ namespace WallClimbingRobot
 		waitForLimitSwitchPress();
 
 		Serial.println("Driving forward to detach from wall...");
-		driveDistance(0.5, 1);
+		driveDistance(0.25, 1);
 
 		Serial.println("Stopping...");
 		stop();
@@ -184,6 +184,7 @@ namespace WallClimbingRobot
 		stop(); //boundary has been hit
 
 		driveDistance(-0.55, 1);
+		stop();
 		turnDistance(0.25);
 		driveSpeed(1);
 		waitForLimitSwitchPress();
@@ -207,7 +208,8 @@ namespace WallClimbingRobot
 		int distToWall = 0; 
 		int prevTime = 0;
 
-		driveDistance(0.01, 1);
+		driveDistance(0.1, 1);
+		stop();
 		turnDistance(-0.25);
 		driveSpeed(0.8);
 		waitForLimitSwitchPress();
@@ -249,6 +251,7 @@ namespace WallClimbingRobot
 		Serial.println(distance);
 		stop();
 		driveDistance(-0.02, 1); //Object is usually detected early, so go a little more
+		stop();
 		turnDistance(0.25);
 		Serial.println("Servo Turn");
 		servo.write(90);
@@ -261,27 +264,31 @@ namespace WallClimbingRobot
 
 	void returnToWall() {
 		driveDistance(-0.12, 1);
+		stop();
 		turnDistance(-0.25);
+		stop();
 		driveSpeed(1);
 		waitForLimitSwitchPress();
 		driveDistance(-0.55, 1);
+		stop();
 		turnDistance(-0.25);
 		driveSpeed(1);
 		waitForLimitSwitchPress();
 		stop();
 	}
 
-	void test() { //Try finding base two from base 2 side of wall
+	void test() { 
 		readDistance();
 		Serial.println(distance);
 		
 	}
 
-	void returnToBase1() { //Not Tested yet
+	void returnToBase1() { 
 		int distToWall = 0; 
 		int prevTime = 0;
 
 		driveDistance(0.01, 1);
+		stop();
 		turnDistance(0.25);
 		driveSpeed(0.8);
 		waitForLimitSwitchPress();
@@ -323,6 +330,7 @@ namespace WallClimbingRobot
 		Serial.println(distance);
 		stop();
 		driveDistance(-0.02, 1); //Object is usually detected early, so go a little more
+		stop();
 		turnDistance(-0.25);
 		Serial.println("Servo Turn");
 		servo.write(90);
@@ -358,11 +366,6 @@ namespace WallClimbingRobot
 			
 			}
 		}
-
-		//motor1.run(RELEASE);
-		//motor2.run(RELEASE);
-		//motor3.run(RELEASE);
-		//motor4.run(RELEASE);
 
 		encCount = 0;
 	}
