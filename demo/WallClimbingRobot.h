@@ -4,8 +4,8 @@
 #define MAX_MOTOR_SPEED (255)
 #define ENC_DIR_FACTOR (-1) // 1 for positive forwards, -1 for positive backwards
 #define ENC_COUNT_PER_METRE (6635)
-#define ENC_COUNT_PER_ROBOT_ROTATION (5000)  //4650 for sticky
-#define TILT_SWITCH_DEBOUNCE_TIME (500) // milliseconds
+#define ENC_COUNT_PER_ROBOT_ROTATION (4650) //4650 for sticky
+#define TILT_SWITCH_DEBOUNCE_TIME (50) // milliseconds
 
 #define ENC_A_PIN (18)
 #define ENC_B_PIN (19)
@@ -13,8 +13,7 @@
 #define SERVO_PIN (44)
 #define TRIG_PIN (42)
 #define ECHO_PIN (40)
-#define TILT_SWITCH_PIN (26)
-
+#define TILT_SWITCH_PIN (26) 
 namespace WallClimbingRobot
 {
 	void setup();
@@ -28,8 +27,11 @@ namespace WallClimbingRobot
 	void test();
 
 	void returnToBase1();
+
 	// Move robot straight forward a factor of 1 metre
-	void driveDistance(double distanceFactor);
+	// Doesn't stop after driving the distance
+	// NOTE: Use only positive values for speedFactor
+	void driveDistance(double distanceFactor, double speedFactor);
 
 	void findWall();
 	void returnToWall();
