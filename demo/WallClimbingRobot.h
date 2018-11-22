@@ -6,6 +6,7 @@
 #define ENC_COUNT_PER_METRE (6635)
 #define ENC_COUNT_PER_ROBOT_ROTATION (4650) //4650 for sticky
 #define TILT_SWITCH_DEBOUNCE_TIME (50) // milliseconds
+#define DIST_TO_WALL (219) //around this value 
 
 #define ENC_A_PIN (18)
 #define ENC_B_PIN (19)
