@@ -14,6 +14,7 @@ namespace WallClimbingRobot
 	int pos;
 	int distance;
 	int duration;
+	float prev_state = 0;
 
 	// Necessary global since it's updated by ISR
 	int encCount;
@@ -95,7 +96,7 @@ namespace WallClimbingRobot
 	void traverseWall()
 	{
 		Serial.println("Driving given distance...");
-		driveDistance(0.95, 1);
+		driveDistance(0.9, 1);
 
 		Serial.println("Driving full speed...");
 		driveSpeed(1);
@@ -133,8 +134,8 @@ namespace WallClimbingRobot
 	void waitForTiltSwitchChange()
 	{
 		int prevStableState = getTiltSwitchState();
-		Serial.print("Previous stable tilt switch state: ");
-		Serial.println(prevStableState);
+		//Serial.print("Previous stable tilt switch state: ");
+		//Serial.println(prevStableState);
 
 		int curStableState = prevStableState;
 
@@ -150,7 +151,7 @@ namespace WallClimbingRobot
 
 	int getTiltSwitchState()
 	{
-		int curState;
+		/*int curState;
 		int prevState = LOW;
 
 		int lastStateChangeTime = millis();
@@ -175,7 +176,29 @@ namespace WallClimbingRobot
 			}
 		}
 
-		return curState;
+		return curState;*/
+		float raw_state = digitalRead(TILT_SWITCH_PIN);
+		int filtered_tilt;
+
+		prev_state = prev_state * LOW_PASS_VALUE + raw_state * (1-LOW_PASS_VALUE);
+		//	prev_state = new_state
+
+		if(prev_state > TILT_SWITCH_THRESHOLD)
+		{
+			filtered_tilt=1;
+		}
+		else
+		{
+			filtered_tilt = 0;
+		}
+
+		Serial.print(raw_state);
+		Serial.print(",");
+		Serial.print(prev_state);
+		Serial.print(",");
+		Serial.println(filtered_tilt);
+
+		return filtered_tilt;
 	}
 
 	void findWall()
@@ -209,6 +232,7 @@ namespace WallClimbingRobot
 	void findObject() { 
 		Serial.println("Delay complete, start finding object");
 		int prevTime = 0;
+		int distToWall = 0;
 		waitForLimitSwitchPress();
 		Serial.println("Limit Switch Pressed");
 		driveDistance(0.3, 1); //drive farther forward to straighten the tail
@@ -217,18 +241,18 @@ namespace WallClimbingRobot
 		driveSpeed(0.8);
 		waitForLimitSwitchPress();
 		stop();
-		driveDistance(0.01, 1); //back up just a little bit so the boundary or other weird things don't get detected
+		driveDistance(-0.07, 1); //back up just a little bit so the boundary or other weird things don't get detected
 		stop();
 		servo.write(5); //0 swings it too far
 		delay(500);
 
 		prevTime = millis();
-		while((millis() - prevTime) < 1000)  //stablize value
+		while((millis() - prevTime) < 2500)  //stablize value
 		{
 			readDistance();
-			/*distToWall = (distToWall + distance)/2;
+			distToWall = (distToWall + distance)/2;
 			Serial.print("distToWall: ");
-			Serial.println(distToWall);*/
+			Serial.println(distToWall);
 		}
 
 		driveSpeed(-0.4); //drive slowly so the target is not missed
@@ -242,7 +266,7 @@ namespace WallClimbingRobot
 			lastDistance = (lastDistance + distance)/2;
 
 			readDistance();
-			if(lastDistance <= (DIST_TO_WALL - 25.0)){
+			if(lastDistance <= (distToWall - 25.0)){
 				Serial.println(lastDistance);
 				if(distance <= (lastDistance + 2) && distance >= (lastDistance - 2) && distance >= 0) {
 					Serial.println(distance);
@@ -281,15 +305,15 @@ namespace WallClimbingRobot
 	}
 
 	void test() { 
-		readDistance();
-		Serial.println(distance);
+		
 		
 	}
 
 	void returnToBase1() { 
 		int distToWall = 0; 
 		int prevTime = 0;
-
+		
+		waitForLimitSwitchPress();
 		driveDistance(0.2, 1);
 		stop();
 		turnDistance(0.25);
@@ -302,7 +326,7 @@ namespace WallClimbingRobot
 		delay(500);
 
 		prevTime = millis();
-		while((millis() - prevTime) < 1000) //to stabilize value 
+		while((millis() - prevTime) < 2500) //to stabilize value 
 		{
 			readDistance();
 			distToWall = (distToWall + distance)/2;
@@ -336,7 +360,7 @@ namespace WallClimbingRobot
 		Serial.print("Distance Stopped: ");
 		Serial.println(distance);
 		stop();
-		driveDistance(-0.02, 1); //Object is usually detected early, so go a little more
+		driveDistance(0.02, 1); //Object is usually detected early, so go a little more
 		stop();
 		turnDistance(-0.25);
 		Serial.println("Servo Turn");

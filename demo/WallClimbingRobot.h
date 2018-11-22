@@ -6,6 +6,8 @@
 #define ENC_COUNT_PER_METRE (6635)
 #define ENC_COUNT_PER_ROBOT_ROTATION (4650) //4650 for sticky
 #define TILT_SWITCH_DEBOUNCE_TIME (50) // milliseconds
+#define LOW_PASS_VALUE (0.9)
+#define TILT_SWITCH_THRESHOLD (0.7)
 #define DIST_TO_WALL (219) //around this value 
 
 #define ENC_A_PIN (18)
@@ -14,7 +16,7 @@
 #define SERVO_PIN (44)
 #define TRIG_PIN (42)
 #define ECHO_PIN (40)
-#define TILT_SWITCH_PIN (26) 
+#define TILT_SWITCH_PIN (50) 
 namespace WallClimbingRobot
 {
 	void setup();

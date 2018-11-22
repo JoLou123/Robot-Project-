@@ -9,12 +9,16 @@ void setup() {
 
 void loop() {
   WallClimbingRobot::waitForLimitSwitchPress();
-  WallClimbingRobot::findWall();
-  WallClimbingRobot::traverseWall();
-  WallClimbingRobot::findObject();
-  WallClimbingRobot::returnToWall();
-  WallClimbingRobot::traverseWall();
+  //WallClimbingRobot::findWall();
+  //WallClimbingRobot::traverseWall();
+  //WallClimbingRobot::findObject();
+  //WallClimbingRobot::returnToWall();
+  //WallClimbingRobot::traverseWall();
   WallClimbingRobot::returnToBase1();
+
+  //WallClimbingRobot::getTiltSwitchState();
+
+  
    
   //delay(5000);
 }
