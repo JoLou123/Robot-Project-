@@ -9,6 +9,7 @@
 #define LOW_PASS_VALUE (0.9)
 #define TILT_SWITCH_THRESHOLD (0.7)
 #define DIST_TO_WALL (219) //around this value 
+#define DIST_FROM_WALL_TO_BOUNDARY (25.0)
 
 #define ENC_A_PIN (18)
 #define ENC_B_PIN (19)
@@ -16,7 +17,8 @@
 #define SERVO_PIN (44)
 #define TRIG_PIN (42)
 #define ECHO_PIN (40)
-#define TILT_SWITCH_PIN (50) 
+#define TILT_SWITCH_PIN (50)
+
 namespace WallClimbingRobot
 {
 	void setup();
@@ -46,6 +48,11 @@ namespace WallClimbingRobot
 
 	void waitForLimitSwitchPress();
 	void waitForTiltSwitchChange();
+
+	int readDistance();
+
+	// Get average ultrasonic distance (cm) over a period of time
+	int getAverageDistance(unsigned int samplingTime);
 
 	// Get debounced tilt switch state
 	int getTiltSwitchState();
