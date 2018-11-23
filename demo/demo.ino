@@ -8,17 +8,33 @@ void setup() {
 }
 
 void loop() {
-  WallClimbingRobot::waitForLimitSwitchPress();
-  //WallClimbingRobot::findWall();
-  //WallClimbingRobot::traverseWall();
-  //WallClimbingRobot::findObject();
-  //WallClimbingRobot::returnToWall();
-  //WallClimbingRobot::traverseWall();
-  WallClimbingRobot::returnToBase1();
-
-  //WallClimbingRobot::getTiltSwitchState();
-
   
-   
-  //delay(5000);
+  WallClimbingRobot::ledOn();
+  WallClimbingRobot::waitForLimitSwitchPress();
+  WallClimbingRobot::ledOff();
+
+  WallClimbingRobot::findWall();
+  WallClimbingRobot::traverseWall();
+  
+  delay(5000); // PULL ROBOT OFF WALL
+  WallClimbingRobot::ledOn();
+  WallClimbingRobot::waitForLimitSwitchPress(); // RESUME ROBOT
+  WallClimbingRobot::ledOff();
+
+  WallClimbingRobot::findObject();
+  WallClimbingRobot::returnToWall();
+  WallClimbingRobot::traverseWall();
+  
+  delay(5000); // PULL ROBOT OFF WALL
+  WallClimbingRobot::ledOn();
+  WallClimbingRobot::waitForLimitSwitchPress(); // RESUME ROBOT
+  WallClimbingRobot::ledOff();
+
+  WallClimbingRobot::returnToBase1();
+  
+  WallClimbingRobot::waitForLimitSwitchPress();
+  while(1) {
+  WallClimbingRobot::turnDistance(0.25);
+  delay(1000);
+  }
 }

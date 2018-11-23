@@ -13,6 +13,8 @@ namespace WallClimbingRobot
 	Servo servo;
 	int pos;
 
+	float prev_state = 0;
+
 	// Necessary global since it's updated by ISR
 	int encCount;
 
@@ -26,6 +28,7 @@ namespace WallClimbingRobot
 		pinMode(LEFT_LIMIT_PIN, INPUT);
 		pinMode(TRIG_PIN, OUTPUT);
 		pinMode(ECHO_PIN, INPUT);
+		pinMode(LED_PIN, OUTPUT);
 
 		servo.attach(SERVO_PIN);
 
@@ -39,22 +42,21 @@ namespace WallClimbingRobot
 
 	int readDistance()
 	{
-		int distance;
-		int duration;
+		long distance;
+		long duration;
 
 		// Clears the trigPin
 		digitalWrite(TRIG_PIN, LOW);
 		delayMicroseconds(2);
 
-		// Sets the trigPin to LOW,HIGH, then LOW state for clean signal
-		digitalWrite(TRIG_PIN, LOW);
-		delayMicroseconds(5);
 		digitalWrite(TRIG_PIN, HIGH);
 		delayMicroseconds(10);
 		digitalWrite(TRIG_PIN, LOW);
+		delayMicroseconds(10);
 		//delay(50);
 		// Reads the echoPin, returns the sound wave travel time in microseconds
 		duration = pulseIn(ECHO_PIN, HIGH);
+		delayMicroseconds(10);
 
 		// Calculating the distance
 		distance = duration*0.034/2;
@@ -69,19 +71,31 @@ namespace WallClimbingRobot
 	{
 		unsigned long startTime = millis();
 		long distanceTotal = 0;
+		long distance;
 		int numReadings = 0;
-		int averageDistance;
+		int averageDistance = -12345;
 
 		while ((millis() - startTime) < samplingTime)
 		{
-			distanceTotal += readDistance();
-			numReadings++;
+			distance = readDistance();
+
+			if (distance < 250 && distance > 0)
+			{
+				distanceTotal += distance;
+				numReadings++;
+			}
+			else
+			{
+				Serial.println("Distance out of range");
+			}
 		}
 
+		averageDistance = distanceTotal / numReadings;
+
+		Serial.print("numReadings: ");
+		Serial.println(numReadings);
 		Serial.print("distanceTotal: ");
 		Serial.println(distanceTotal);
-
-		averageDistance = distanceTotal / numReadings;
 
 		Serial.print("Average distance: ");
 		Serial.println(averageDistance);
@@ -142,7 +156,7 @@ namespace WallClimbingRobot
 		//driveDistance(0.1, 1);
 
 		Serial.println("Slowly driving down first bit of wall...");
-		driveDistance(0.3, 0.4);
+		driveDistance(0.25, 0.4);
 
 		Serial.println("Quickly driving down rest of wall...");
 		driveSpeed(1);
@@ -157,8 +171,6 @@ namespace WallClimbingRobot
 		stop();
 
 		Serial.println("Wall traversal complete! Gonna delay now");
-
-		delay(5000);
 	}
 
 	void waitForTiltSwitchChange()
@@ -172,8 +184,8 @@ namespace WallClimbingRobot
 		while (curStableState == prevStableState)
 		{
 			curStableState = getTiltSwitchState();
-			Serial.print("Current stable tilt switch state: ");
-			Serial.println(curStableState);
+			//Serial.print("Current stable tilt switch state: ");
+			//Serial.println(curStableState);
 		}
 
 		Serial.println("Tilt switch state changed!");
@@ -208,8 +220,10 @@ namespace WallClimbingRobot
 
 		return curState;*/
 		float raw_state = digitalRead(TILT_SWITCH_PIN);
+		//Serial.print("Raw state: ");
+		//Serial.println(raw_state);
+
 		int filtered_tilt;
-		float prev_state = 0;
 
 		prev_state = prev_state * LOW_PASS_VALUE + raw_state * (1-LOW_PASS_VALUE);
 		//	prev_state = new_state
@@ -223,19 +237,21 @@ namespace WallClimbingRobot
 			filtered_tilt = 0;
 		}
 
+		
 		Serial.print(raw_state);
 		Serial.print(",");
 		Serial.print(prev_state);
 		Serial.print(",");
 		Serial.println(filtered_tilt);
+		
 
 		return filtered_tilt;
 	}
 
 	void findWall()
 	{ 
-		turnDistance(-0.25); //left
-		driveSpeed(0.8);
+		driveSpeed(1);
+		delay(1000);
 		waitForLimitSwitchPress();
 		stop(); //boundary has been hit
 
@@ -263,19 +279,18 @@ namespace WallClimbingRobot
 	void findObject()
 	{
 		int distance;
-		Serial.println("Finding object...");
 		int prevTime = 0;
 		int distToWall = 0;
-		waitForLimitSwitchPress();
-		Serial.println("Limit Switch Pressed");
-		driveDistance(0.3, 1); //drive farther forward to straighten the tail
+
+		Serial.println("Finding object...");
+		//driveDistance(0.3, 1); //drive farther forward to straighten the tail
 		stop();
-		turnDistance(-0.25);
-		driveSpeed(0.8);
+		turnDistance(0.28);
+		driveSpeed(1);
 		waitForLimitSwitchPress();
-		driveDistance(-0.04, 1);
+		driveDistance(-0.6, 1);
 		stop();
-		servo.write(5); //0 swings it too far
+		servo.write(180); //0 swings it too far
 		delay(500);
 
 		/*
@@ -289,45 +304,63 @@ namespace WallClimbingRobot
 		}
 		*/
 
-		distToWall = getAverageDistance(500);
+		distToWall = getAverageDistance(1000);
+		//distToWall = 190;
 		Serial.print("Reference distance: ");
 		Serial.println(distToWall);
 		delay(1000);
 
-		driveSpeed(-0.2); //drive slowly so the target is not missed
+		//driveSpeed(-0.2); //drive slowly so the target is not missed
 
-		int objectFound = 0; 
-		int distToObject = 0;
+		int distToObject = scanForObject(distToWall, -SCAN_INTERVAL_DIST);
 
-		while (objectFound == 0)
-		{
-			distToObject = getAverageDistance(100);
-			Serial.print("Current distance: ");
-			Serial.println(distToObject);
-
-			if(distToObject < (distToWall - DIST_FROM_WALL_TO_BOUNDARY) && distToObject > 0)
-			{
-				Serial.println("Object found!");
-				objectFound = 1;
-			}
-		}
+		driveDistance(-0.08, 1); // Robot stops early, move a bit to account for this
 
 		stop();
 		//driveDistance(-0.02, 1); //Object is usually detected early, so go a little more
-		stop();
-		turnDistance(0.25);
+		//stop();
+		turnDistance(-0.25);
 		Serial.println("Servo Turn");
 		servo.write(90);
 		delay(500);
-		Serial.println("Going towards object");
+		Serial.print("Going towards object");
 		Serial.println(distToObject);
 		driveDistance((distToObject + 10)/100.0, 1);	
 		stop();
 	}
 
+	int scanForObject(int referenceDist, double driveDist)
+	{
+		int objectFound = 0; 
+		int distToObject = 0;
+
+		while (objectFound == 0)
+		{
+			stop();
+			delay(300);
+			distToObject = getAverageDistance(500);
+			Serial.print("Current distance: ");
+			Serial.println(distToObject);
+
+			if(distToObject < (referenceDist - DIST_FROM_WALL_TO_BOUNDARY) && distToObject > 0)
+			{
+				Serial.println("Object found!");
+				objectFound = 1;
+			}
+			else
+			{
+				driveDistance(driveDist, 1);
+			}
+		}
+
+		stop();
+
+		return distToObject;
+	}
+
 	void returnToWall()
 	{
-		driveDistance(-0.12, 1);
+		driveDistance(-0.2, 1);
 		stop();
 		turnDistance(-0.25);
 		stop();
@@ -343,32 +376,30 @@ namespace WallClimbingRobot
 
 	void test()
 	{ 
-		servo.write(5);
-
-		while(1)
-		{
-			readDistance();
-		}
+		servo.write(180);
+		int referenceDist = getAverageDistance(2000);
+		Serial.print("Reference distance: ");
+		Serial.println(referenceDist);
+		scanForObject(referenceDist, SCAN_INTERVAL_DIST);
 	}
 
-	void returnToBase1()
+	void returnToBase1Ultrasonic()
 	{ 
-		int distToWall = 0; 
-		int prevTime = 0;
-		int distance = 0;
+		//int distToWall = 0; 
+		//int prevTime = 0;
 		
-		waitForLimitSwitchPress();
 		driveDistance(0.2, 1);
 		stop();
 		turnDistance(0.25);
-		driveSpeed(0.8);
+		driveSpeed(1);
 		waitForLimitSwitchPress();
-		driveDistance(-0.2, 1);
+		driveDistance(-0.1, 1);
 		turnDistance(-0.25);
 		stop();
 		servo.write(180);
 		delay(500);
 
+		/*
 		prevTime = millis();
 		while((millis() - prevTime) < 2500) //to stabilize value 
 		{
@@ -376,8 +407,11 @@ namespace WallClimbingRobot
 			distToWall = (distToWall + distance)/2;
 			Serial.print("distToWall: ");
 			Serial.println(distToWall);
-		}
+		}*/
 
+		int distToObject = scanForObject(DIST_TO_RAMP, SCAN_INTERVAL_DIST);
+
+		/*
 		driveSpeed(0.5);
 
 		int lastDistance = 0;
@@ -404,15 +438,30 @@ namespace WallClimbingRobot
 		Serial.print("Distance Stopped: ");
 		Serial.println(distance);
 		stop();
-		driveDistance(0.02, 1); //Object is usually detected early, so go a little more
+		*/
+		driveDistance(0.05, 1); //Object is usually detected early, so go a little more
 		stop();
 		turnDistance(-0.25);
 		Serial.println("Servo Turn");
 		servo.write(90);
-		delay(500);
+		//delay(500);
 		Serial.println("Going towards object");
-		Serial.println(distanceToObject);
-		driveDistance((distanceToObject + 15)/100.0, 1);
+		Serial.println(distToObject);
+		driveDistance((distToObject + 15)/100.0, 1);
+		stop();
+	}
+
+	void returnToBase1()
+	{
+		driveSpeed(1);
+		delay(1000);
+		waitForLimitSwitchPress();
+		stop();
+
+		driveDistance(-0.7, 1);
+		turnDistance(-0.25);
+
+		driveDistance(0.7, 1);
 		stop();
 	}
 
@@ -502,6 +551,16 @@ namespace WallClimbingRobot
 		motor4.run(RELEASE);
 
 		encCount = 0;
+	}
+
+	void ledOn()
+	{
+		digitalWrite(LED_PIN, HIGH);
+	}
+
+	void ledOff()
+	{
+		digitalWrite(LED_PIN, LOW);
 	}
 
 	void ENC_PHASE_A_CHANGE_ISR()
