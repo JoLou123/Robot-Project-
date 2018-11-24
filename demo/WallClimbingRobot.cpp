@@ -285,7 +285,7 @@ namespace WallClimbingRobot
 		Serial.println("Finding object...");
 		//driveDistance(0.3, 1); //drive farther forward to straighten the tail
 		stop();
-		turnDistance(0.28);
+		turnDistance(0.27);
 		driveSpeed(1);
 		waitForLimitSwitchPress();
 		driveDistance(-0.6, 1);

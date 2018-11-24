@@ -31,10 +31,4 @@ void loop() {
   WallClimbingRobot::ledOff();
 
   WallClimbingRobot::returnToBase1();
-  
-  WallClimbingRobot::waitForLimitSwitchPress();
-  while(1) {
-  WallClimbingRobot::turnDistance(0.25);
-  delay(1000);
-  }
 }
